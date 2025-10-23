@@ -1,0 +1,231 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow:
+        0 0 0 0.1rem white,
+        0 0 0 0.25rem #6b7c32;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #ffffff !important;
+    color: #6b7c32 !important;
+}
+
+/* Olive Green Theme */
+:root {
+    --olive-green: #6b7c32;
+    --olive-light: #8fa653;
+    --olive-dark: #556229;
+    --olive-bg-light: #f8f9f6;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: var(--olive-green) !important;
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #f0f0f0 !important;
+}
+
+/* Buttons */
+.btn-olive {
+    background-color: var(--olive-green) !important;
+    border-color: var(--olive-green) !important;
+    color: white !important;
+}
+
+.btn-olive:hover {
+    background-color: var(--olive-dark) !important;
+    border-color: var(--olive-dark) !important;
+    color: white !important;
+}
+
+.btn-outline-olive {
+    border-color: var(--olive-green) !important;
+    color: var(--olive-green) !important;
+    background-color: white !important;
+}
+
+.btn-outline-olive:hover {
+    background-color: var(--olive-green) !important;
+    border-color: var(--olive-green) !important;
+    color: white !important;
+}
+
+/* Cards */
+.card {
+    background-color: white !important;
+    border-color: #e0e0e0 !important;
+}
+
+.border-olive {
+    border-color: var(--olive-green) !important;
+}
+
+.card-header.bg-olive {
+    background-color: var(--olive-green) !important;
+    color: white !important;
+}
+
+/* Text Colors */
+.text-olive {
+    color: var(--olive-green) !important;
+}
+
+.text-muted {
+    color: #666666 !important;
+}
+
+/* Badges */
+.badge.bg-olive {
+    background-color: var(--olive-green) !important;
+}
+
+/* Tables */
+.table {
+    color: var(--olive-green) !important;
+}
+
+.table thead th {
+    border-color: var(--olive-green) !important;
+    color: var(--olive-green) !important;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td {
+    background-color: var(--olive-bg-light) !important;
+}
+
+/* Alerts */
+.alert-success {
+    background-color: #d4edda !important;
+    border-color: var(--olive-light) !important;
+    color: var(--olive-dark) !important;
+}
+
+/* Forms */
+.form-control {
+    border-color: #cccccc !important;
+    color: var(--olive-green) !important;
+}
+
+.form-control:focus {
+    border-color: var(--olive-green) !important;
+    box-shadow: 0 0 0 0.2rem rgba(107, 124, 50, 0.25) !important;
+}
+
+.form-label {
+    color: var(--olive-green) !important;
+    font-weight: 600 !important;
+}
+
+/* Modal */
+.modal-content {
+    background-color: white !important;
+}
+
+.modal-header.bg-olive {
+    background-color: var(--olive-green) !important;
+    color: white !important;
+}
+
+/* Links */
+a {
+    color: var(--olive-green) !important;
+}
+
+a:hover {
+    color: var(--olive-dark) !important;
+}
+
+/* Main container */
+.container-fluid {
+    background-color: white !important;
+    padding: 20px !important;
+}
+
+/* Dashboard specific */
+.dashboard-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(107, 124, 50, 0.3) !important;
+}
+
+/* Appointment Success Modal */
+.appointment-details {
+    line-height: 1.8;
+    font-size: 14px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.appointment-details strong {
+    color: var(--olive-green);
+    font-weight: 600;
+}
+
+#appointmentSuccessModal .modal-content {
+    border: 2px solid #28a745;
+    border-radius: 10px;
+}
+
+#appointmentSuccessModal .modal-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border-radius: 8px 8px 0 0;
+}
+
+#appointmentSuccessModal .fa-calendar-check {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.appointment-success-details {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 0 5px 5px 0;
+}

@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Clinical Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --olive-green: #6b7c32;
+            --olive-green-light: #8fa653;
+            --olive-green-dark: #556229;
+            --olive-green-lighter: #8FBC8F;
+            --olive-green-very-light: #f8f9f6;
+        }
+
+        body {
+            background-color: #ffffff !important;
+            color: var(--olive-green) !important;
+        }
+
+        .container-fluid {
+            background-color: white !important;
+        }
+
+        .bg-olive {
+            background-color: var(--olive-green) !important;
+        }
+
+        .bg-olive-light {
+            background-color: var(--olive-green-very-light) !important;
+        }
+
+        .btn-olive {
+            background-color: var(--olive-green);
+            border-color: var(--olive-green);
+            color: white;
+        }
+
+        .btn-olive:hover {
+            background-color: var(--olive-green-dark);
+            border-color: var(--olive-green-dark);
+            color: white;
+        }
+
+        .btn-olive-outline {
+            background-color: transparent;
+            border-color: var(--olive-green);
+            color: var(--olive-green);
+        }
+
+        .btn-olive-outline:hover {
+            background-color: var(--olive-green);
+            color: white;
+        }
+
+        .text-olive {
+            color: var(--olive-green) !important;
+        }
+
+        .border-olive {
+            border-color: var(--olive-green) !important;
+        }
+
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+
+        .nav-link:hover {
+            color: var(--olive-green-lighter) !important;
+        }
+
+        .table thead {
+            background-color: var(--olive-green);
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(85, 107, 47, 0.1);
+        }
+
+        .form-control:focus {
+            border-color: var(--olive-green);
+            box-shadow: 0 0 0 0.2rem rgba(85, 107, 47, 0.25);
+        }
+
+        .card-header {
+            background-color: var(--olive-green) !important;
+            color: white !important;
+        }
+
+        .sidebar {
+            background-color: var(--olive-green-dark);
+            min-height: calc(100vh - 56px);
+        }
+
+        .sidebar .nav-link {
+            color: white !important;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--olive-green);
+            color: var(--olive-green-lighter) !important;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: var(--olive-green);
+            font-weight: bold;
+        }
+
+        body {
+            background-color: var(--olive-green-very-light);
+        }
+
+        .login-container {
+            background: linear-gradient(135deg, var(--olive-green-light), var(--olive-green-dark));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-header {
+            background: var(--olive-green);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .login-body {
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Login" &&
+        ViewContext.RouteData.Values["action"]?.ToString() == "Index")
+    {
+        <!-- Full-page login view -->
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2><i class="fas fa-hospital-alt me-2"></i>Clinical Management System</h2>
+                    <p class="mb-0">Please login to continue</p>
+                </div>
+                <div class="login-body">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Main application layout -->
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-olive">
+                <div class="container">
+                    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-hospital-alt me-2"></i>
+                        Clinical Management System
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                        <i class="fas fa-home me-1"></i>Home
+                                    </a>
+                                </li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                                            <i class="fas fa-users-cog me-1"></i>Admin Dashboard
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                        <ul class="navbar-nav">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-user me-1"></i>@User.Identity.Name
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-1"></i>Profile</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Login" asp-action="Logout">
+                                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-light" asp-controller="Login" asp-action="Index">
+                                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container-fluid">
+            <div class="row">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                        <div class="position-sticky pt-3">
+                            <ul class="nav flex-column">
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+                                           asp-controller="Admin" asp-action="Index">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "AddUser" ? "active" : "")"
+                                           asp-controller="Admin" asp-action="AddUser">
+                                            <i class="fas fa-user-plus me-2"></i>Add User
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">
+                                            <i class="fas fa-users me-2"></i>Manage Users
+                                        </a>
+                                    </li>
+                                }
+                                <!-- Add other role-specific menu items here -->
+                            </ul>
+                        </div>
+                    </nav>
+                }
+                <main class="@(User.Identity.IsAuthenticated ? "col-md-9 ms-sm-auto col-lg-10 px-md-4" : "col-12") mt-4">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+
+        <footer class="border-top footer text-muted mt-5">
+            <div class="container text-center py-3">
+                &copy; 2025 - Clinical Management System
+            </div>
+        </footer>
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

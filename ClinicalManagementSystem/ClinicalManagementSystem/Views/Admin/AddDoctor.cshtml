@@ -1,0 +1,231 @@
+@model ClinicalManagementSystem2025.Models.Doctor
+@{
+    ViewData["Title"] = "Add Doctor";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-olive">
+            <i class="fas fa-user-md me-2"></i>Add New Doctor
+        </h1>
+        <div>
+            <a asp-action="ManageDoctors" class="btn btn-outline-olive me-2">
+                <i class="fas fa-list me-1"></i>View All Doctors
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Success / Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Validation Summary -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h5>Please fix the following errors:</h5>
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Doctor Form -->
+    <div class="card shadow-sm border-olive">
+        <div class="card-header bg-olive text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-file-medical me-2"></i>Doctor Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddDoctor" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+
+                <!-- User Selection -->
+                <div class="col-md-6">
+                    <label asp-for="UserId" class="form-label fw-bold">Select User *</label>
+                    <select asp-for="UserId" class="form-select" required>
+                        <option value="">-- Select a Doctor User --</option>
+                        @foreach (var user in ViewBag.Users as IEnumerable<ClinicalManagementSystem2025.Models.User>)
+                        {
+                            <option value="@user.UserId">@user.FullName (@user.UserName)</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UserId" class="text-danger small"></span>
+                    <small class="text-muted">Select from users with Doctor role</small>
+                </div>
+
+                <!-- Department Selection -->
+                <div class="col-md-6">
+                    <label asp-for="DepartmentId" class="form-label fw-bold">Department *</label>
+                    <select asp-for="DepartmentId" class="form-select" id="departmentSelect" required>
+                        <option value="">-- Select Department --</option>
+                        @foreach (var dept in ViewBag.Departments as IEnumerable<ClinicalManagementSystem2025.Models.Department>)
+                        {
+                            <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                </div>
+
+                <!-- Specialization Selection -->
+                <div class="col-md-6">
+                    <label asp-for="SpecializationId" class="form-label fw-bold">Specialization</label>
+                    <select asp-for="SpecializationId" class="form-select" id="specializationSelect">
+                        <option value="">-- Select Specialization --</option>
+                    </select>
+                    <span asp-validation-for="SpecializationId" class="text-danger small"></span>
+                    <small class="text-muted">Will be populated based on selected department</small>
+                </div>
+
+                <!-- Free Text Specialization (Legacy) -->
+                <div class="col-md-6">
+                    <label asp-for="Specialization" class="form-label fw-bold">Custom Specialization</label>
+                    <input asp-for="Specialization" class="form-control" placeholder="Enter custom specialization (optional)" />
+                    <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    <small class="text-muted">Use this for specializations not in the dropdown</small>
+                </div>
+
+                <!-- Qualification -->
+                <div class="col-md-6">
+                    <label asp-for="Qualification" class="form-label fw-bold">Qualification</label>
+                    <input asp-for="Qualification" class="form-control" placeholder="e.g., MBBS, MD, MS" />
+                    <span asp-validation-for="Qualification" class="text-danger small"></span>
+                </div>
+
+                <!-- Experience -->
+                <div class="col-md-6">
+                    <label asp-for="Experience" class="form-label fw-bold">Experience (Years)</label>
+                    <input asp-for="Experience" type="number" class="form-control" min="0" max="50" />
+                    <span asp-validation-for="Experience" class="text-danger small"></span>
+                </div>
+
+                <!-- Consultation Fee -->
+                <div class="col-md-6">
+                    <label asp-for="ConsultationFee" class="form-label fw-bold">Consultation Fee</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input asp-for="ConsultationFee" type="number" class="form-control" step="0.01" min="0" />
+                    </div>
+                    <span asp-validation-for="ConsultationFee" class="text-danger small"></span>
+                </div>
+
+                <!-- Availability From -->
+                <div class="col-md-6">
+                    <label asp-for="AvailableFrom" class="form-label fw-bold">Available From</label>
+                    <input asp-for="AvailableFrom" type="time" class="form-control" />
+                    <span asp-validation-for="AvailableFrom" class="text-danger small"></span>
+                </div>
+
+                <!-- Availability To -->
+                <div class="col-md-6">
+                    <label asp-for="AvailableTo" class="form-label fw-bold">Available To</label>
+                    <input asp-for="AvailableTo" type="time" class="form-control" />
+                    <span asp-validation-for="AvailableTo" class="text-danger small"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="submit" class="btn btn-olive">
+                            <i class="fas fa-save me-1"></i>Save Doctor
+                        </button>
+                        <a asp-action="ManageDoctors" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Auto-hide success/error messages
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Load specializations when department changes
+            $('#departmentSelect').change(function() {
+                var departmentId = $(this).val();
+                var specializationSelect = $('#specializationSelect');
+
+                specializationSelect.html('<option value="">-- Loading... --</option>');
+
+                if (departmentId) {
+                    $.get('@Url.Action("GetSpecializationsByDepartment", "Admin")', { departmentId: departmentId })
+                        .done(function(response) {
+                            specializationSelect.html('<option value="">-- Select Specialization --</option>');
+
+                            if (response.success && response.specializations) {
+                                $.each(response.specializations, function(index, spec) {
+                                    specializationSelect.append(
+                                        '<option value="' + spec.specializationId + '">' +
+                                        spec.specializationName +
+                                        '</option>'
+                                    );
+                                });
+                            }
+                        })
+                        .fail(function() {
+                            specializationSelect.html('<option value="">-- Error loading specializations --</option>');
+                        });
+                } else {
+                    specializationSelect.html('<option value="">-- Select Specialization --</option>');
+                }
+            });
+
+            // Form validation
+            $('form').on('submit', function(e) {
+                var userId = $('#UserId').val();
+                var departmentId = $('#DepartmentId').val();
+
+                if (!userId) {
+                    e.preventDefault();
+                    alert('Please select a user for the doctor.');
+                    return false;
+                }
+
+                if (!departmentId) {
+                    e.preventDefault();
+                    alert('Please select a department.');
+                    return false;
+                }
+            });
+
+            // Availability time validation
+            $('#AvailableFrom, #AvailableTo').change(function() {
+                var fromTime = $('#AvailableFrom').val();
+                var toTime = $('#AvailableTo').val();
+
+                if (fromTime && toTime && fromTime >= toTime) {
+                    alert('Available From time must be earlier than Available To time.');
+                    $(this).focus();
+                }
+            });
+        });
+    </script>
+}

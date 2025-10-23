@@ -1,0 +1,338 @@
+@model ClinicalManagementSystem2025.Models.Appointment
+@{
+    ViewData["Title"] = "Appointment Scheduled Successfully";
+    var patient = ViewBag.Patient as Patient;
+    var doctor = ViewBag.Doctor as Doctor;
+}
+
+<div class="container-fluid">
+    <!-- Success Header -->
+    <div class="text-center mb-4">
+        <div class="success-animation">
+            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+        </div>
+        <h1 class="text-success mb-2">
+            <i class="fas fa-calendar-check me-2"></i>Appointment Successfully Scheduled!
+        </h1>
+        <p class="lead text-muted">Your appointment has been confirmed and scheduled successfully</p>
+    </div>
+
+    <!-- Appointment Details Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-success shadow-lg">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-medical me-2"></i>Appointment Confirmation
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Appointment Code -->
+                    <div class="text-center mb-4">
+                        <div class="appointment-code-box">
+                            <h3 class="text-success mb-0">@Model.AppointmentCode</h3>
+                            <small class="text-muted">Appointment Reference Number</small>
+                        </div>
+                    </div>
+
+                    <!-- Patient & Doctor Details -->
+                    <div class="row">
+                        <!-- Patient Information -->
+                        <div class="col-md-6">
+                            <div class="detail-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-user text-primary me-2"></i>Patient Information
+                                </h5>
+                                <div class="detail-item">
+                                    <span class="label">Name:</span>
+                                    <span class="value">@patient?.FullName</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Phone:</span>
+                                    <span class="value">@patient?.Phone</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Age:</span>
+                                    <span class="value">@patient?.Age years</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Gender:</span>
+                                    <span class="value">@patient?.Gender</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(patient?.BloodGroup))
+                                {
+                                    <div class="detail-item">
+                                        <span class="label">Blood Group:</span>
+                                        <span class="value">@patient.BloodGroup</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Doctor Information -->
+                        <div class="col-md-6">
+                            <div class="detail-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-user-md text-success me-2"></i>Doctor Information
+                                </h5>
+                                <div class="detail-item">
+                                    <span class="label">Doctor:</span>
+                                    <span class="value">Dr. @doctor?.DoctorName</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Specialization:</span>
+                                    <span class="value">@doctor?.Specialization</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(doctor?.Qualification))
+                                {
+                                    <div class="detail-item">
+                                        <span class="label">Qualification:</span>
+                                        <span class="value">@doctor.Qualification</span>
+                                    </div>
+                                }
+                                <div class="detail-item">
+                                    <span class="label">Consultation Fee:</span>
+                                    <span class="value fee">₹@doctor?.ConsultationFee</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Appointment Schedule -->
+                    <div class="appointment-schedule text-center">
+                        <h5 class="section-title mb-3">
+                            <i class="fas fa-calendar-alt text-warning me-2"></i>Appointment Schedule
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="schedule-item">
+                                    <i class="fas fa-calendar fa-2x text-olive mb-2"></i>
+                                    <h6>Date</h6>
+                                    <p class="schedule-value">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="schedule-item">
+                                    <i class="fas fa-clock fa-2x text-olive mb-2"></i>
+                                    <h6>Time</h6>
+                                    <p class="schedule-value">@DateTime.Today.Add(Model.AppointmentTime).ToString("hh:mm tt") (@Model.DurationMinutes minutes)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Reason))
+                    {
+                        <hr class="my-4">
+                        <div class="reason-section">
+                            <h6 class="text-muted">
+                                <i class="fas fa-clipboard-list me-2"></i>Reason for Visit
+                            </h6>
+                            <p class="reason-text">@Model.Reason</p>
+                        </div>
+                    }
+
+                    <!-- Status -->
+                    <div class="text-center mt-4">
+                        <span class="badge bg-success fs-6 px-3 py-2">
+                            <i class="fas fa-check-circle me-1"></i>@Model.Status
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card Footer with Important Notes -->
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Important Instructions:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Please arrive <strong>15 minutes early</strong> for your appointment</li>
+                                    <li>Bring a valid ID and any previous medical records</li>
+                                    <li>Contact reception for any changes or cancellations</li>
+                                    <li>A confirmation SMS has been sent to your registered number</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mt-4">
+        <button type="button" class="btn btn-success btn-lg me-3" onclick="printAppointment()">
+            <i class="fas fa-print me-2"></i>Print Appointment Slip
+        </button>
+        <button type="button" class="btn btn-primary btn-lg me-3" onclick="sendSMSConfirmation()">
+            <i class="fas fa-sms me-2"></i>Send SMS Confirmation
+        </button>
+        <a href="@Url.Action("Index", "Receptionist")" class="btn btn-olive btn-lg">
+            <i class="fas fa-home me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="text-center mt-5 mb-4">
+        <div class="card border-0">
+            <div class="card-body">
+                <h6 class="text-muted">For any queries, contact our reception:</h6>
+                <p class="mb-0">
+                    <i class="fas fa-phone text-olive me-2"></i>+1 (555) 123-4567 |
+                    <i class="fas fa-envelope text-olive me-2 ms-3"></i>reception@clinic.com
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .success-animation {
+            animation: successPulse 2s ease-in-out infinite;
+        }
+
+        @@keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .appointment-code-box {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .detail-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+
+        .section-title {
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px dotted #dee2e6;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #6c757d;
+            flex: 0 0 40%;
+        }
+
+        .value {
+            color: #495057;
+            text-align: right;
+            flex: 1;
+        }
+
+        .value.fee {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .appointment-schedule {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .schedule-item {
+            padding: 20px;
+        }
+
+        .schedule-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 0;
+        }
+
+        .reason-section {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .reason-text {
+            margin-bottom: 0;
+            font-style: italic;
+            color: #856404;
+        }
+
+        @@media print {
+            .btn, .no-print {
+                display: none !important;
+            }
+
+            .card {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+            }
+
+            .text-success {
+                color: #000 !important;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Print appointment function
+        function printAppointment() {
+            window.print();
+        }
+
+        // Send SMS confirmation
+        function sendSMSConfirmation() {
+            // This would integrate with your SMS service
+            Swal.fire({
+                icon: 'success',
+                title: 'SMS Sent!',
+                text: 'Appointment confirmation SMS has been sent to the patient.',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+
+        // Auto-hide success message after 10 seconds
+        setTimeout(function() {
+            $('.alert-success').fadeOut('slow');
+        }, 10000);
+
+        // Add some animation on page load
+        $(document).ready(function() {
+            $('.card').hide().fadeIn(1000);
+
+            // Animate counters or any numeric values
+            $('.schedule-value, .value.fee').each(function() {
+                $(this).addClass('animate__animated animate__fadeInUp');
+            });
+        });
+    </script>
+}
