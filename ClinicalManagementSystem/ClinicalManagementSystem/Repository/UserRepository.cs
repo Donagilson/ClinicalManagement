@@ -270,5 +270,58 @@ namespace ClinicalManagementSystem2025.Repository
 
             return users;
         }
+        public async Task<User?> GetUserByUsernameAsync(string username)
+        {
+            using var conn = new SqlConnection(_conn);
+            var sql = @"
+        SELECT UserId, UserName, Email 
+        FROM TblUsers 
+        WHERE UserName = @UserName";
+
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@UserName", username);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                return new User
+                {
+                    UserId = (int)reader["UserId"],
+                    UserName = reader["UserName"].ToString() ?? "",
+                    Email = reader["Email"]?.ToString() ?? ""
+                };
+            }
+
+            return null;
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            using var conn = new SqlConnection(_conn);
+            var sql = @"
+        SELECT UserId, UserName, Email 
+        FROM TblUsers 
+        WHERE Email = @Email";
+
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@Email", email);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                return new User
+                {
+                    UserId = (int)reader["UserId"],
+                    UserName = reader["UserName"].ToString() ?? "",
+                    Email = reader["Email"]?.ToString() ?? ""
+                };
+            }
+
+            return null;
+        }
     }
 }

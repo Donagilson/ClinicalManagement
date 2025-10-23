@@ -14,5 +14,7 @@ namespace ClinicalManagementSystem2025.Repository
         Task<IEnumerable<User>> GetDoctorsAsync();
         Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName);
         Task<User?> AuthenticateAsync(string username, string password);
+        Task<User?> GetUserByUsernameAsync(string username);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }
