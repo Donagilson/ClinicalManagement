@@ -1,3 +1,1 @@
-15 minutes
-create a remote repository named as DemoCms2025 and configure in local with two files .show updated files in remote repository.
-Use main Instead of master.
+
