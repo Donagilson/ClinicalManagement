@@ -38,16 +38,64 @@ namespace ClinicalManagementSystem2025.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUser(User user)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                Console.WriteLine($"Attempting to add user: {user.UserName}");
+
+                if (!ModelState.IsValid)
+                {
+                    Console.WriteLine("Model state invalid");
+                    var roles = await _userRepository.GetAllRolesAsync();
+                    ViewBag.Roles = roles;
+                    return View(user);
+                }
+
+                // Check if username already exists
+                var existingUser = await _userRepository.GetUserByUsernameAsync(user.UserName);
+                if (existingUser != null)
+                {
+                    Console.WriteLine($"Username {user.UserName} already exists");
+                    ModelState.AddModelError("UserName", $"Username '{user.UserName}' already exists. Please choose a different username.");
+                    var roles = await _userRepository.GetAllRolesAsync();
+                    ViewBag.Roles = roles;
+                    return View(user);
+                }
+
+                // Check if email already exists
+                if (!string.IsNullOrEmpty(user.Email))
+                {
+                    var existingEmail = await _userRepository.GetUserByEmailAsync(user.Email);
+                    if (existingEmail != null)
+                    {
+                        Console.WriteLine($"Email {user.Email} already exists");
+                        ModelState.AddModelError("Email", $"Email '{user.Email}' is already registered. Please use a different email.");
+                        var roles = await _userRepository.GetAllRolesAsync();
+                        ViewBag.Roles = roles;
+                        return View(user);
+                    }
+                }
+
+                // Set default values
+                user.IsActive = true;
+                user.CreatedDate = DateTime.Now;
+
+                Console.WriteLine($"Adding user to database: {user.UserName}");
+                await _userRepository.AddUserAsync(user);
+                Console.WriteLine("User added successfully");
+
+                TempData["SuccessMessage"] = $"User '{user.UserName}' created successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding user: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+
+                ModelState.AddModelError("", $"An error occurred while creating the user: {ex.Message}");
                 var roles = await _userRepository.GetAllRolesAsync();
                 ViewBag.Roles = roles;
                 return View(user);
             }
-
-            await _userRepository.AddUserAsync(user);
-            TempData["SuccessMessage"] = "User created successfully!";
-            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -73,6 +121,29 @@ namespace ClinicalManagementSystem2025.Controllers
                 var roles = await _userRepository.GetAllRolesAsync();
                 ViewBag.Roles = roles;
                 return View(user);
+            }
+
+            // Check if username already exists (excluding current user)
+            var existingUser = await _userRepository.GetUserByUsernameAsync(user.UserName);
+            if (existingUser != null && existingUser.UserId != user.UserId)
+            {
+                ModelState.AddModelError("UserName", "Username already exists. Please choose a different username.");
+                var roles = await _userRepository.GetAllRolesAsync();
+                ViewBag.Roles = roles;
+                return View(user);
+            }
+
+            // Check if email already exists (excluding current user)
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                var existingUserByEmail = await _userRepository.GetUserByEmailAsync(user.Email);
+                if (existingUserByEmail != null && existingUserByEmail.UserId != user.UserId)
+                {
+                    ModelState.AddModelError("Email", "Email address already exists. Please use a different email.");
+                    var roles = await _userRepository.GetAllRolesAsync();
+                    ViewBag.Roles = roles;
+                    return View(user);
+                }
             }
 
             await _userRepository.UpdateUserAsync(user);
@@ -279,6 +350,23 @@ namespace ClinicalManagementSystem2025.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Debug action to check database state
+        [HttpGet]
+        public async Task<IActionResult> DebugUsers()
+        {
+            try
+            {
+                var allUsers = await _userRepository.GetAllUsersAsync();
+                ViewBag.AllUsers = allUsers;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return Content($"Error: {ex.Message}\n\nStack: {ex.StackTrace}");
             }
         }
     }

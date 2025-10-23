@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Debug Users";
+}
+
+<div class="container-fluid">
+    <h2>Debug Information - All Users in Database</h2>
+
+    @if (ViewBag.AllUsers != null)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                    <th>Active</th>
+                    <th>Role ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in ViewBag.AllUsers)
+                {
+                    <tr>
+                        <td>@user.UserId</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.FullName</td>
+                        <td>@user.IsActive</td>
+                        <td>@user.RoleId</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">No users found or error loading users.</div>
+    }
+
+    <div class="mt-3">
+        <a href="@Url.Action("Index")" class="btn btn-primary">Back to User Management</a>
+        <a href="@Url.Action("AddUser")" class="btn btn-success">Try Add User Again</a>
+    </div>
+</div>
