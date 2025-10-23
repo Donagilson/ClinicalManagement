@@ -121,3 +121,4 @@ C:\Users\hp\Desktop\project1\ClinicalManagementSystem\ClinicalManagementSystem\o
 C:\Users\hp\Desktop\project1\ClinicalManagementSystem\ClinicalManagementSystem\obj\Debug\net8.0\ClinicalManagementSystem.genruntimeconfig.cache
 C:\Users\hp\Desktop\project1\ClinicalManagementSystem\ClinicalManagementSystem\obj\Debug\net8.0\ref\ClinicalManagementSystem.dll
 C:\Users\hp\Desktop\project1\ClinicalManagementSystem\ClinicalManagementSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\hp\Desktop\project1\ClinicalManagementSystem\ClinicalManagementSystem\obj\Debug\net8.0\ClinicalManagementSystem.sourcelink.json
