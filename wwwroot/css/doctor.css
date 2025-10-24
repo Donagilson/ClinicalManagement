@@ -1,0 +1,1080 @@
+/* Doctor Module Styles - Vine Purple Theme */
+:root {
+    --vine-purple: #6A0DAD;
+    --vine-light: #8A2BE2;
+    --vine-lighter: #B19CD9;
+    --vine-dark: #4B0082;
+    --vine-darker: #301934;
+    --cream: #F5F5DC;
+    --cream-light: #FFFEF5;
+    --white: #FFFFFF;
+    --gray-light: #f8f9fa;
+    --gray-border: #dee2e6;
+    --vine-muted: #9370DB;
+}
+
+/* ===== GENERAL STYLES ===== */
+.doctor-body {
+    background-color: var(--gray-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* ===== NAVIGATION STYLES ===== */
+.doctor-navbar {
+    background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: none;
+}
+
+    .doctor-navbar .navbar-brand,
+    .doctor-navbar .nav-link {
+        color: var(--white) !important;
+        font-weight: 500;
+    }
+
+        .doctor-navbar .nav-link:hover {
+            color: var(--cream) !important;
+            transform: translateY(-1px);
+            transition: all 0.3s ease;
+        }
+
+    .doctor-navbar .dropdown-menu {
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+
+    .doctor-navbar .dropdown-item:hover {
+        background-color: var(--vine-light);
+        color: var(--white);
+    }
+
+/* ===== SIDEBAR STYLES ===== */
+.doctor-sidebar {
+    background: linear-gradient(to bottom, var(--cream) 0%, var(--cream-light) 100%);
+    min-height: calc(100vh - 56px);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    border-right: 1px solid var(--gray-border);
+}
+
+    .doctor-sidebar .nav-link {
+        color: var(--vine-dark);
+        padding: 12px 20px;
+        border-left: 4px solid transparent;
+        margin: 2px 0;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+        .doctor-sidebar .nav-link:hover {
+            background-color: rgba(106, 13, 173, 0.1);
+            border-left-color: var(--vine-light);
+            color: var(--vine-darker);
+            transform: translateX(5px);
+        }
+
+        .doctor-sidebar .nav-link.active {
+            background-color: rgba(106, 13, 173, 0.15);
+            border-left-color: var(--vine-purple);
+            color: var(--vine-darker);
+            font-weight: 600;
+        }
+
+        .doctor-sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+/* ===== CARD STYLES ===== */
+.doctor-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+    .doctor-card:hover {
+        box-shadow: 0 8px 25px rgba(106, 13, 173, 0.15);
+        transform: translateY(-2px);
+    }
+
+.doctor-card-header {
+    background: linear-gradient(135deg, var(--vine-lighter) 0%, #f8f9fa 100%);
+    border-bottom: 2px solid var(--vine-purple);
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+    .doctor-card-header.vine-bg {
+        background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%) !important;
+        color: white;
+        border-bottom: none;
+    }
+
+.doctor-card-body {
+    padding: 1.5rem;
+}
+
+/* ===== BUTTON STYLES ===== */
+.btn-vine {
+    background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+    .btn-vine:hover {
+        background: linear-gradient(135deg, var(--vine-dark) 0%, var(--vine-darker) 100%);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+.btn-vine-sm {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+
+.btn-vine-outline {
+    background: transparent;
+    color: var(--vine-purple);
+    border: 2px solid var(--vine-purple);
+}
+
+    .btn-vine-outline:hover {
+        background: var(--vine-purple);
+        color: var(--white);
+    }
+
+/* ===== TABLE STYLES ===== */
+.doctor-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+    .doctor-table thead {
+        background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%);
+        color: var(--white);
+    }
+
+    .doctor-table th {
+        border: none;
+        padding: 15px 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, var(--vine-lighter) 0%, #f8f9fa 100%);
+        border-bottom: 2px solid var(--vine-purple);
+        color: var(--vine-dark);
+    }
+
+    .doctor-table td {
+        padding: 12px;
+        border-color: var(--gray-border);
+        vertical-align: middle;
+    }
+
+    .doctor-table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+        .doctor-table tbody tr:hover {
+            background-color: var(--vine-lighter);
+            transform: scale(1.01);
+        }
+
+/* ===== BADGE STYLES ===== */
+.badge-vine {
+    background-color: var(--vine-light);
+    color: var(--vine-darker);
+}
+
+.badge-vine-purple {
+    background-color: var(--vine-purple);
+    color: var(--white);
+}
+
+.badge-vine-outline {
+    background-color: transparent;
+    border: 1px solid var(--vine-purple);
+    color: var(--vine-purple);
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 600;
+    border-radius: 0.375rem;
+}
+
+.status-scheduled {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-in-progress {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-completed {
+    background-color: #e8f5e8;
+    color: var(--vine-dark);
+}
+
+.status-requested {
+    background-color: var(--vine-lighter);
+    color: var(--vine-dark);
+}
+
+.status-cancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+/* ===== FORM STYLES ===== */
+.form-control:focus {
+    border-color: var(--vine-light);
+    box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+}
+
+.form-select:focus {
+    border-color: var(--vine-light);
+    box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+}
+
+.form-label {
+    color: var(--vine-dark);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* ===== ALERT STYLES ===== */
+.alert-vine {
+    background-color: rgba(106, 13, 173, 0.1);
+    border: 1px solid var(--vine-light);
+    color: var(--vine-darker);
+    border-radius: 8px;
+}
+
+/* ===== ICON STYLES ===== */
+.icon-vine {
+    color: var(--vine-purple);
+}
+
+.icon-large {
+    font-size: 3rem;
+    opacity: 0.7;
+}
+
+/* ===== PATIENT DETAILS SPECIFIC STYLES ===== */
+.patient-avatar-section {
+    padding: 20px 0;
+}
+
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+}
+
+.patient-stats .stat-item {
+    padding: 15px;
+    border-radius: 8px;
+    background: rgba(106, 13, 173, 0.05);
+}
+
+    .patient-stats .stat-item h5 {
+        color: var(--vine-dark);
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(106, 13, 173, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== TIMELINE STYLES ===== */
+.prescription-timeline {
+    position: relative;
+    padding-left: 10px;
+}
+
+    .prescription-timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--vine-light);
+    }
+
+.timeline-item {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 25px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 10px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    background: var(--vine-purple);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    z-index: 2;
+}
+
+.timeline-content {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--vine-purple);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+    .timeline-content:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+/* ===== LAB REPORTS GRID ===== */
+.lab-reports-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.lab-report-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--vine-purple);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+    .lab-report-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+/* ===== MEDICINE ITEM STYLING ===== */
+.medicine-item {
+    border-left: 4px solid var(--vine-purple) !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .medicine-item:hover {
+        background-color: var(--vine-lighter);
+        transform: translateX(5px);
+    }
+
+/* ===== COLOR UTILITIES ===== */
+.text-vine-purple {
+    color: var(--vine-purple) !important;
+}
+
+.text-vine-dark {
+    color: var(--vine-dark) !important;
+}
+
+.bg-vine-light {
+    background-color: var(--vine-lighter) !important;
+}
+
+.bg-vine-light-solid {
+    background-color: var(--vine-light) !important;
+    color: white;
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== VALIDATION STYLES ===== */
+.input-validation-error {
+    border-color: #dc3545 !important;
+}
+
+.field-validation-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.validation-summary-errors {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+    .validation-summary-errors ul {
+        margin-bottom: 0;
+        padding-left: 1rem;
+    }
+
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.4.4-.4'/%3e%3cpath d='M6 7V5.5'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.was-validated .form-control:valid {
+    border-color: #198754;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* ===== LOADING SPINNER ===== */
+.vine-spinner {
+    border: 3px solid var(--cream);
+    border-top: 3px solid var(--vine-purple);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--vine-light);
+    border-radius: 4px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--vine-purple);
+    }
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .doctor-sidebar {
+        min-height: auto;
+        margin-bottom: 20px;
+    }
+
+    .doctor-card-body {
+        padding: 15px;
+    }
+
+    .doctor-table {
+        font-size: 0.9rem;
+    }
+
+    .btn-vine {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .doctor-sidebar,
+    .doctor-navbar {
+        display: none !important;
+    }
+
+    .doctor-card {
+        box-shadow: none !important;
+        border: 1px solid var(--gray-border) !important;
+    }
+
+    .btn-vine {
+        display: none !important;
+    }
+}
+
+/* ===== DASHBOARD SIDEBAR SPECIFIC STYLES ===== */
+.patient-list, .appointment-list, .lab-report-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.patient-item, .appointment-item, .lab-report-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--vine-purple) !important;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 15px;
+    background: var(--white);
+}
+
+    .patient-item:hover, .appointment-item:hover, .lab-report-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+/* Scrollbar styling for sidebar lists */
+.patient-list::-webkit-scrollbar,
+.appointment-list::-webkit-scrollbar,
+.lab-report-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.patient-list::-webkit-scrollbar-track,
+.appointment-list::-webkit-scrollbar-track,
+.lab-report-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.patient-list::-webkit-scrollbar-thumb,
+.appointment-list::-webkit-scrollbar-thumb,
+.lab-report-list::-webkit-scrollbar-thumb {
+    background: var(--vine-purple);
+    border-radius: 10px;
+}
+
+    .patient-list::-webkit-scrollbar-thumb:hover,
+    .appointment-list::-webkit-scrollbar-thumb:hover,
+    .lab-report-list::-webkit-scrollbar-thumb:hover {
+        background: var(--vine-dark);
+    }
+
+/* ===== DASHBOARD RIGHT SIDEBAR STYLES ===== */
+
+/* Patient Card Styles */
+.patient-card {
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid var(--olive-green);
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+    .patient-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(128, 128, 0, 0.1);
+    }
+
+.avatar-circle-sm {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--olive-green) 0%, var(--olive-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(128, 128, 0, 0.2);
+}
+
+.patient-meta {
+    font-size: 0.8rem;
+}
+
+.patient-actions .btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+/* Appointment Card Styles */
+.appointment-card {
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid var(--olive-light);
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+    .appointment-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(128, 128, 0, 0.1);
+    }
+
+.appointment-details {
+    font-size: 0.85rem;
+}
+
+/* Lab Report Card Styles */
+.lab-report-card {
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid var(--olive-muted);
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+    .lab-report-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(128, 128, 0, 0.1);
+    }
+
+.lab-report-details {
+    font-size: 0.85rem;
+}
+
+/* List Containers */
+.patient-list, .appointment-list, .lab-report-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+    /* Custom Scrollbar for Sidebar Lists */
+    .patient-list::-webkit-scrollbar,
+    .appointment-list::-webkit-scrollbar,
+    .lab-report-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .patient-list::-webkit-scrollbar-track,
+    .appointment-list::-webkit-scrollbar-track,
+    .lab-report-list::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .patient-list::-webkit-scrollbar-thumb,
+    .appointment-list::-webkit-scrollbar-thumb,
+    .lab-report-list::-webkit-scrollbar-thumb {
+        background: var(--olive-light);
+        border-radius: 10px;
+    }
+
+        .patient-list::-webkit-scrollbar-thumb:hover,
+        .appointment-list::-webkit-scrollbar-thumb:hover,
+        .lab-report-list::-webkit-scrollbar-thumb:hover {
+            background: var(--olive-green);
+        }
+
+/* Badge Styles */
+.badge.bg-olive-light {
+    background-color: var(--olive-light) !important;
+    color: white;
+}
+
+/* Empty State Styles */
+.text-center.py-4 {
+    padding: 2rem 1rem;
+}
+
+    .text-center.py-4 .icon-large {
+        font-size: 2.5rem;
+        opacity: 0.5;
+    }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .patient-card,
+    .appointment-card,
+    .lab-report-card {
+        padding: 12px;
+    }
+
+    .avatar-circle-sm {
+        width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+    }
+
+    .patient-list,
+    .appointment-list,
+    .lab-report-list {
+        max-height: 300px;
+    }
+}
+
+/* Add these styles to your existing CSS file */
+
+/* Vine Purple Color Theme */
+:root {
+    --vine-purple: #8B008B;
+    --vine-purple-dark: #6A006A;
+    --vine-purple-light: #9D2B9D;
+    --vine-purple-lighter: #AF4CAF;
+    --vine-purple-lightest: #E6CCE6;
+    --vine-purple-gradient: linear-gradient(135deg, var(--vine-purple), var(--vine-purple-dark));
+}
+
+/* Quick Actions Section Styling */
+.quick-actions-header {
+    background: var(--vine-purple-gradient) !important;
+    border-bottom: 3px solid var(--vine-purple-dark);
+}
+
+    .quick-actions-header .card-title {
+        color: white !important;
+        font-weight: 600;
+    }
+
+/* Vine Purple Button Styles */
+.btn-vine {
+    background: var(--vine-purple-gradient);
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(139, 0, 139, 0.2);
+}
+
+    .btn-vine:hover {
+        background: var(--vine-purple-dark);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(139, 0, 139, 0.3);
+    }
+
+    .btn-vine:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(139, 0, 139, 0.2);
+    }
+
+.btn-vine-outline {
+    background: transparent;
+    border: 2px solid var(--vine-purple);
+    color: var(--vine-purple);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .btn-vine-outline:hover {
+        background: var(--vine-purple);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(139, 0, 139, 0.3);
+    }
+
+    .btn-vine-outline:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(139, 0, 139, 0.2);
+    }
+
+/* Quick Actions Icons */
+.quick-actions-icon {
+    background: var(--vine-purple-lightest);
+    color: var(--vine-purple);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn-vine:hover .quick-actions-icon,
+.btn-vine-outline:hover .quick-actions-icon {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* Action Items Animation */
+.quick-action-item {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .quick-action-item:hover {
+        transform: translateX(5px);
+    }
+
+/* Badge Styles for Vine Purple */
+.badge-vine {
+    background-color: var(--vine-purple);
+    color: white;
+}
+
+.badge-vine-light {
+    background-color: var(--vine-purple-lightest);
+    color: var(--vine-purple);
+}
+
+/* Card Header Enhancement */
+.doctor-card-header.vine-bg {
+    background: var(--vine-purple-gradient) !important;
+    border-bottom: 3px solid var(--vine-purple-dark);
+}
+
+    .doctor-card-header.vine-bg .card-title {
+        color: white !important;
+    }
+
+/* Quick Actions Container */
+.quick-actions-container {
+    background: linear-gradient(135deg, #f8f5ff 0%, #f0ebff 100%);
+    border-left: 4px solid var(--vine-purple);
+    border-radius: 8px;
+}
+
+/* ===== QUICK ACTION BUTTON STYLES ===== */
+.quick-action-btn {
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+    .quick-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(106, 13, 173, 0.3);
+    }
+
+    .quick-action-btn:active {
+        transform: translateY(-1px);
+    }
+
+/* Vine Purple Button */
+.btn-vine {
+    background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+}
+
+    .btn-vine:hover {
+        background: linear-gradient(135deg, var(--vine-dark) 0%, var(--vine-darker) 100%);
+        color: white;
+        box-shadow: 0 6px 25px rgba(106, 13, 173, 0.4);
+    }
+
+/* Vine Outline Button */
+.btn-vine-outline {
+    background: transparent;
+    color: var(--vine-purple);
+    border: 2px solid var(--vine-purple);
+    box-shadow: 0 2px 10px rgba(106, 13, 173, 0.1);
+}
+
+    .btn-vine-outline:hover {
+        background: var(--vine-purple);
+        color: white;
+        border-color: var(--vine-purple);
+        box-shadow: 0 4px 20px rgba(106, 13, 173, 0.3);
+    }
+
+/* Vine Secondary Button */
+.btn-vine-secondary {
+    background: linear-gradient(135deg, var(--vine-light) 0%, var(--vine-muted) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(139, 69, 199, 0.3);
+}
+
+    .btn-vine-secondary:hover {
+        background: linear-gradient(135deg, var(--vine-muted) 0%, var(--vine-purple) 100%);
+        color: white;
+        box-shadow: 0 6px 25px rgba(139, 69, 199, 0.4);
+    }
+
+/* Quick Action Button Icons */
+.quick-action-btn i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.quick-action-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* Button Loading States */
+.quick-action-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+    .quick-action-btn.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+/* Ripple Effect */
+.quick-action-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+    .quick-action-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .quick-action-btn:active::before {
+        width: 300px;
+        height: 300px;
+    }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .quick-action-btn {
+        padding: 12px 16px !important;
+        font-size: 0.9rem;
+    }
+
+        .quick-action-btn i {
+            font-size: 1rem;
+        }
+}
+
+/* Card Header Enhancement */
+.doctor-card-header.vine-bg {
+    background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%) !important;
+    border-bottom: 3px solid var(--vine-light);
+}
+
+    .doctor-card-header.vine-bg .card-title {
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+/* Button Group Spacing */
+.d-grid.gap-2 {
+    gap: 1rem !important;
+}
+
+/* Hover Animation for Card */
+.doctor-card:hover .quick-action-btn {
+    transform: translateY(-2px);
+}
+
+    .doctor-card:hover .quick-action-btn:hover {
+        transform: translateY(-5px);
+    }
+
+/* Vine Purple Button Colors Only */
+.btn-vine {
+    background: linear-gradient(135deg, var(--vine-purple) 0%, var(--vine-dark) 100%);
+    color: white;
+    border: none;
+}
+
+    .btn-vine:hover {
+        background: linear-gradient(135deg, var(--vine-dark) 0%, var(--vine-darker) 100%);
+        color: white;
+    }
+
+.btn-vine-outline {
+    background: transparent;
+    color: var(--vine-purple);
+    border: 2px solid var(--vine-purple);
+}
+
+    .btn-vine-outline:hover {
+        background: var(--vine-purple);
+        color: white;
+        border-color: var(--vine-purple);
+    }

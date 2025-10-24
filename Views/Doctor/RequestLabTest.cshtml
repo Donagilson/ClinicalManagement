@@ -1,0 +1,87 @@
+﻿@model ClinicalManagementSystem2025.ViewModels.LabRequestViewModel
+@{
+    ViewData["Title"] = "Request Lab Test";
+    Layout = "_DoctorLayout";
+}
+
+<div class="container-fluid fade-in">
+    <div class="row">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-0 text-white">
+                                <i class="fas fa-flask me-2"></i>Request Lab Test
+                            </h4>
+                            <p class="mb-0 text-white opacity-75">Order laboratory tests for patient diagnosis</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="@Url.Action("PatientDetails", new { patientId = Model.PatientId, appointmentId = Model.AppointmentId })"
+                               class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Patient
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="doctor-card-body">
+                    <form asp-action="RequestLabTest" method="post" id="labTestForm">
+                        <input type="hidden" asp-for="PatientId" />
+                        <input type="hidden" asp-for="AppointmentId" />
+
+                        <div class="row">
+                            <!-- Test Name -->
+                            <div class="col-md-12 mb-4">
+                                <div class="form-group">
+                                    <label asp-for="TestName" class="form-label fw-bold text-olive-dark"></label>
+                                    <input asp-for="TestName" class="form-control"
+                                           placeholder="e.g., Complete Blood Count, Lipid Profile, Urine Analysis" />
+                                    <span asp-validation-for="TestName" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-md-12 mb-4">
+                                <div class="form-group">
+                                    <label asp-for="Description" class="form-label fw-bold text-olive-dark"></label>
+                                    <textarea asp-for="Description" class="form-control" rows="4"
+                                              placeholder="Detailed test description, specific requirements, or clinical indications..."></textarea>
+                                    <span asp-validation-for="Description" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12 mb-4">
+                                <div class="form-group">
+                                    <label asp-for="Notes" class="form-label fw-bold text-olive-dark"></label>
+                                    <textarea asp-for="Notes" class="form-control" rows="3"
+                                              placeholder="Special instructions, urgency level, or additional notes..."></textarea>
+                                    <span asp-validation-for="Notes" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="@Url.Action("PatientDetails", new { patientId = Model.PatientId, appointmentId = Model.AppointmentId })"
+                                       class="btn btn-secondary">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-olive">
+                                        <i class="fas fa-paper-plane me-1"></i>Request Test
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

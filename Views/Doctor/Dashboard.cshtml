@@ -1,0 +1,134 @@
+﻿@model List<ClinicalManagementSystem2025.Models.Appointment>
+@inject ClinicalManagementSystem2025.Services.IDoctorService _doctorService
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+    Layout = "_DoctorLayout";
+}
+
+<div class="container-fluid fade-in">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-user-md me-2"></i>Welcome, Dr. @ViewBag.DoctorName
+                            </h4>
+                            <p class="mb-0">@ViewBag.Today</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-light text-dark fs-6">
+                                <i class="fas fa-calendar-day me-1"></i>
+                                Today's Appointments: @(Model?.Count ?? 0)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Appointments -->
+    <div class="row">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-alt me-2"></i>Today's Appointments
+                    </h5>
+                </div>
+                <div class="doctor-card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover doctor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient Name</th>
+                                        <th>Gender</th>
+                                        <th>Age</th>
+                                        <th>Phone</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model)
+                                    {
+                                        <tr class="slide-in-left">
+                                            <td>@appointment.AppointmentTime.ToString("hh:mm tt")</td>
+                                            <td>
+                                                @if (appointment.Patient != null)
+                                                {
+                                                    @appointment.Patient.FullName
+                                                }
+                                                else
+                                                {
+                                                    <text>Patient @appointment.PatientId</text>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (appointment.Patient != null)
+                                                {
+                                                    @appointment.Patient.Gender
+                                                }
+                                                else
+                                                {
+                                                    <text>-</text>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (appointment.Patient != null && appointment.Patient.DateOfBirth != DateTime.MinValue)
+                                                {
+                                                    @(DateTime.Now.Year - appointment.Patient.DateOfBirth.Year)
+                                                }
+                                                else
+                                                {
+                                                    <text>-</text>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (appointment.Patient != null)
+                                                {
+                                                    @appointment.Patient.Phone
+                                                }
+                                                else
+                                                {
+                                                    <text>-</text>
+                                                }
+                                            </td>
+                                            <td>@appointment.Reason</td>
+                                            <td>
+                                                <span class="status-badge status-@appointment.Status.ToLower().Replace(" ", "-")">
+                                                    @appointment.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("PatientDetails", new { patientId = appointment.PatientId, appointmentId = appointment.AppointmentId })"
+                                                   class="btn btn-olive btn-olive-sm">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times icon-large icon-olive mb-3"></i>
+                            <h5 class="icon-olive">No Appointments Today</h5>
+                            <p class="text-muted">You have no scheduled appointments for today.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

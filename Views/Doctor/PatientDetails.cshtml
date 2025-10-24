@@ -1,0 +1,393 @@
+﻿@model ClinicalManagementSystem2025.Models.Patient
+@{
+    ViewData["Title"] = "Patient Details";
+    Layout = "_DoctorLayout";
+
+    var prescriptions = ViewBag.Prescriptions as List<ClinicalManagementSystem2025.Models.Prescription>;
+    var labReports = ViewBag.LabReports as List<ClinicalManagementSystem2025.Models.LabReport>;
+    var medicines = ViewBag.Medicines as List<ClinicalManagementSystem2025.Models.Medicine>;
+}
+
+<div class="container-fluid fade-in">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-user-injured me-2"></i>Patient Medical Profile
+                            </h4>
+                            <p class="mb-0 opacity-75">Complete patient information and medical history</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="@Url.Action("Dashboard")" class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Patient Profile -->
+        <div class="col-lg-4">
+            <!-- Patient Profile Card -->
+            <div class="doctor-card mb-4">
+                <div class="doctor-card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-id-card me-2"></i>Patient Profile
+                    </h5>
+                </div>
+                <div class="doctor-card-body text-center">
+                    <div class="patient-avatar-section mb-4">
+                        <div class="avatar-circle mx-auto mb-3">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4 class="mb-1">@Model.FullName</h4>
+                        <p class="text-muted mb-2">Patient ID: #@Model.PatientId.ToString("D4")</p>
+                        <span class="badge badge-olive-green">@Model.Gender</span>
+                    </div>
+
+                    <div class="patient-stats">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h5 class="mb-1">@Model.Age</h5>
+                                    <small class="text-muted">Age</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-item">
+                                    <h5 class="mb-1">@(string.IsNullOrEmpty(Model.BloodGroup) ? "N/A" : Model.BloodGroup)</h5>
+                                    <small class="text-muted">Blood Group</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="doctor-card mb-4">
+                <div class="doctor-card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-address-book me-2"></i>Contact Details
+                    </h5>
+                </div>
+                <div class="doctor-card-body">
+                    <div class="contact-list">
+                        <div class="contact-item d-flex align-items-center mb-3">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone text-olive-green"></i>
+                            </div>
+                            <div class="contact-details ms-3">
+                                <small class="text-muted d-block">Phone</small>
+                                <strong>@Model.Phone</strong>
+                            </div>
+                        </div>
+
+                        <div class="contact-item d-flex align-items-center mb-3">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope text-olive-green"></i>
+                            </div>
+                            <div class="contact-details ms-3">
+                                <small class="text-muted d-block">Email</small>
+                                <strong>@(string.IsNullOrEmpty(Model.Email) ? "Not provided" : Model.Email)</strong>
+                            </div>
+                        </div>
+
+                        <div class="contact-item d-flex align-items-center mb-3">
+                            <div class="contact-icon">
+                                <i class="fas fa-home text-olive-green"></i>
+                            </div>
+                            <div class="contact-details ms-3">
+                                <small class="text-muted d-block">Address</small>
+                                <strong>@(string.IsNullOrEmpty(Model.Address) ? "Not provided" : Model.Address)</strong>
+                            </div>
+                        </div>
+
+                        <div class="contact-item d-flex align-items-center">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt text-olive-green"></i>
+                            </div>
+                            <div class="contact-details ms-3">
+                                <small class="text-muted d-block">Emergency Contact</small>
+                                <strong>@(string.IsNullOrEmpty(Model.EmergencyContact) ? "Not provided" : Model.EmergencyContact)</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="doctor-card">
+                <div class="doctor-card-header">
+                    <h5 class="card-title mb-0 text-olive-dark">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="doctor-card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("CreatePrescription", new { patientId = Model.PatientId, appointmentId = ViewBag.AppointmentId })"
+                           class="btn btn-olive mb-2 py-2">
+                            <i class="fas fa-prescription me-2"></i>New Prescription
+                        </a>
+                        <a href="@Url.Action("RequestLabTest", new { patientId = Model.PatientId, appointmentId = ViewBag.AppointmentId })"
+                           class="btn btn-olive-outline mb-2 py-2">
+                            <i class="fas fa-flask me-2"></i>Request Lab Test
+                        </a>
+                        <button class="btn btn-olive-outline py-2" data-bs-toggle="modal" data-bs-target="#consultationModal">
+                            <i class="fas fa-stethoscope me-2"></i>Add Consultation Notes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Medical Information -->
+        <div class="col-lg-8">
+            <!-- Prescription History -->
+            <div class="doctor-card mb-4">
+                <div class="doctor-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-prescription me-2"></i>Prescription History
+                    </h5>
+                    <span class="badge badge-olive-green">@prescriptions?.Count</span>
+                </div>
+                <div class="doctor-card-body">
+                    @if (prescriptions != null && prescriptions.Any())
+                    {
+                        <div class="prescription-timeline">
+                            @foreach (var prescription in prescriptions.OrderByDescending(p => p.PrescriptionDate))
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-marker">
+                                        <i class="fas fa-pills"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0 text-olive-dark">@prescription.Diagnosis</h6>
+                                            <small class="text-muted">@prescription.PrescriptionDate.ToString("MMM dd, yyyy")</small>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(prescription.Notes))
+                                        {
+                                            <p class="text-muted small mb-2">@prescription.Notes</p>
+                                        }
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <span class="badge bg-light text-dark">Prescription #@prescription.PrescriptionId</span>
+                                            <span class="badge bg-olive-light">Dr. @ViewBag.DoctorName</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-prescription-bottle-alt icon-large text-muted mb-3"></i>
+                            <h6 class="text-muted">No Prescription History</h6>
+                            <p class="text-muted small">No prescriptions have been issued for this patient yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Lab Reports -->
+            <div class="doctor-card">
+                <div class="doctor-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-flask me-2"></i>Laboratory Reports
+                    </h5>
+                    <span class="badge badge-olive-green">@labReports?.Count</span>
+                </div>
+                <div class="doctor-card-body">
+                    @if (labReports != null && labReports.Any())
+                    {
+                        <div class="lab-reports-grid">
+                            @foreach (var report in labReports.OrderByDescending(r => r.TestDate))
+                            {
+                                <div class="lab-report-card">
+                                    <div class="report-header d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="mb-0">@report.TestName</h6>
+                                        <span class="badge @GetLabStatusBadge(report.Status)">@report.Status</span>
+                                    </div>
+                                    <div class="report-meta d-flex justify-content-between text-muted small mb-2">
+                                        <span>Date: @report.TestDate.ToString("MMM dd, yyyy")</span>
+                                        <span>Report #@report.LabReportId</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(report.Result))
+                                    {
+                                        <div class="report-result">
+                                            <label class="text-muted small mb-1">Results:</label>
+                                            <p class="mb-0 small bg-light p-2 rounded">@report.Result</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="report-pending">
+                                            <p class="text-warning small mb-0">
+                                                <i class="fas fa-clock me-1"></i>Awaiting test results
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-vial icon-large text-muted mb-3"></i>
+                            <h6 class="text-muted">No Laboratory Reports</h6>
+                            <p class="text-muted small">No lab tests have been conducted for this patient yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Consultation Notes Modal -->
+<div class="modal fade" id="consultationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header olive-bg">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-stethoscope me-2"></i>Add Consultation Notes
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="consultationForm" asp-action="SaveConsultation" method="post">
+                <input type="hidden" name="patientId" value="@Model.PatientId" />
+                <input type="hidden" name="appointmentId" value="@ViewBag.AppointmentId" />
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold text-olive-dark">Symptoms *</label>
+                            <textarea name="symptoms" class="form-control" rows="3"
+                                      placeholder="Describe the patient's symptoms..." required></textarea>
+                            <div class="invalid-feedback">Please describe the symptoms.</div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold text-olive-dark">Diagnosis *</label>
+                            <textarea name="diagnosis" class="form-control" rows="3"
+                                      placeholder="Enter your diagnosis..." required></textarea>
+                            <div class="invalid-feedback">Please provide a diagnosis.</div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold text-olive-dark">Treatment Plan</label>
+                            <textarea name="treatmentPlan" class="form-control" rows="3"
+                                      placeholder="Describe the recommended treatment plan..."></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold text-olive-dark">Additional Notes</label>
+                            <textarea name="notes" class="form-control" rows="2"
+                                      placeholder="Any additional notes..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-olive">Save Consultation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetLabStatusBadge(string status)
+    {
+        if (string.IsNullOrEmpty(status))
+            return "bg-secondary";
+
+        return status.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "pending" => "bg-warning",
+            "in progress" => "bg-info",
+            "requested" => "bg-primary",
+            "cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Consultation form validation
+        (function() {
+            'use strict';
+            var form = document.getElementById('consultationForm');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        })();
+
+        // AJAX form submission for consultation
+        $('#consultationForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (!this.checkValidity()) {
+                return;
+            }
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#consultationModal').modal('hide');
+                        showAlert('Consultation notes saved successfully!', 'success');
+                        // Reset form
+                        $('#consultationForm')[0].reset();
+                        $('#consultationForm').removeClass('was-validated');
+                    } else {
+                        showAlert('Error: ' + response.message, 'error');
+                    }
+                },
+                error: function() {
+                    showAlert('Error saving consultation notes.', 'error');
+                }
+            });
+        });
+
+        function showAlert(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            $('.container-fluid').prepend(alertHtml);
+
+            // Auto remove alert after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+
+        // Reset form when modal is closed
+        $('#consultationModal').on('hidden.bs.modal', function () {
+            $('#consultationForm')[0].reset();
+            $('#consultationForm').removeClass('was-validated');
+        });
+    </script>
+}

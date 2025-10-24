@@ -1,0 +1,110 @@
+﻿@model List<ClinicalManagementSystem2025.Models.LabReport>
+@{
+    ViewData["Title"] = "All Lab Reports";
+    Layout = "_DoctorLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-flask me-2"></i>All Lab Reports
+                                <span class="badge bg-light text-dark ms-2">@ViewBag.TotalReports Total</span>
+                            </h4>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            @if (ViewBag.StatusStats != null)
+                            {
+                                foreach (var stat in ViewBag.StatusStats)
+                                {
+                                    <span class="badge bg-light text-dark me-2">@stat.Key: @stat.Value</span>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover doctor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Test Date</th>
+                                        <th>Patient</th>
+                                        <th>Test Name</th>
+                                        <th>Status</th>
+                                        <th>Result</th>
+                                        <th>Notes</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var report in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@report.TestDate.ToString("MMM dd, yyyy")</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Patient ID: @report.PatientId</strong>
+                                            </td>
+                                            <td>@report.TestName</td>
+                                            <td>
+                                                <span class="status-badge status-@report.Status.ToLower().Replace(" ", "-")">
+                                                    @report.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="result-text">
+                                                    @(report.Result ?? "Pending")
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@(report.Notes ?? "No notes")</small>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("PatientDetails", new { patientId = report.PatientId })"
+                                                   class="btn btn-olive btn-sm">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-flask icon-large text-muted mb-3"></i>
+                            <h5 class="text-muted">No Lab Reports Found</h5>
+                            <p class="text-muted">No lab reports have been requested yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .result-text {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>

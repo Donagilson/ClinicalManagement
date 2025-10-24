@@ -1,0 +1,301 @@
+﻿@model ClinicalManagementSystem2025.ViewModels.PrescriptionViewModel
+@{
+    ViewData["Title"] = "Create Prescription";
+    Layout = "_DoctorLayout";
+}
+
+<div class="container-fluid fade-in">
+    <div class="row">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-0 text-white">
+                                <i class="fas fa-prescription me-2"></i>Create New Prescription
+                            </h4>
+                            <p class="mb-0 text-white opacity-75">Prescribe medications for patient care</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="@Url.Action("PatientDetails", new { patientId = Model.PatientId, appointmentId = Model.AppointmentId })"
+                               class="btn btn-light btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Patient
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="doctor-card-body">
+                    <!-- Patient Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="patient-info-card p-3 border rounded">
+                                <h6 class="text-olive-dark mb-3">
+                                    <i class="fas fa-user-injured me-2"></i>Patient Information
+                                </h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Patient ID</small>
+                                        <p class="mb-2 fw-bold">#@Model.PatientId.ToString("D4")</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Appointment ID</small>
+                                        <p class="mb-2 fw-bold">#@Model.AppointmentId.ToString("D4")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="CreatePrescription" method="post" id="prescriptionForm">
+                        <input type="hidden" asp-for="PatientId" />
+                        <input type="hidden" asp-for="AppointmentId" />
+
+                        <!-- Diagnosis Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Diagnosis" class="form-label fw-bold text-olive-dark">Diagnosis *</label>
+                                    <textarea asp-for="Diagnosis" class="form-control" rows="3"
+                                              placeholder="Enter patient diagnosis and condition..." required></textarea>
+                                    <span asp-validation-for="Diagnosis" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Instructions Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Instructions" class="form-label fw-bold text-olive-dark">General Instructions</label>
+                                    <textarea asp-for="Instructions" class="form-control" rows="2"
+                                              placeholder="General instructions for the patient..."></textarea>
+                                    <span asp-validation-for="Instructions" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Notes -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Notes" class="form-label fw-bold text-olive-dark">Additional Notes</label>
+                                    <textarea asp-for="Notes" class="form-control" rows="2"
+                                              placeholder="Additional clinical notes..."></textarea>
+                                    <span asp-validation-for="Notes" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medicines Section -->
+                        <div class="medicine-section mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-olive-dark mb-0">
+                                    <i class="fas fa-pills me-2"></i>Medications
+                                </h5>
+                                <button type="button" id="add-medicine" class="btn btn-olive-outline btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add Medicine
+                                </button>
+                            </div>
+
+                            <div id="medicines-container">
+                                <!-- Initial medicine item -->
+                                <div class="medicine-item border p-3 mb-3 rounded">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold text-olive">Medicine *</label>
+                                            <select name="Medicines[0].MedicineId" class="form-control medicine-select" required>
+                                                <option value="">Select Medicine</option>
+                                                @foreach (var medicine in ViewBag.Medicines as List<ClinicalManagementSystem2025.Models.Medicine>)
+                                                {
+                                                    <option value="@medicine.MedicineId">@medicine.MedicineName</option>
+                                                }
+                                            </select>
+                                            <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[0].MedicineId"></span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label fw-semibold text-olive">Dosage *</label>
+                                            <input name="Medicines[0].Dosage" class="form-control" placeholder="5mg" required />
+                                            <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[0].Dosage"></span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label fw-semibold text-olive">Frequency *</label>
+                                            <input name="Medicines[0].Frequency" class="form-control" placeholder="Once daily" required />
+                                            <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[0].Frequency"></span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label fw-semibold text-olive">Duration *</label>
+                                            <input name="Medicines[0].Duration" class="form-control" placeholder="7 days" required />
+                                            <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[0].Duration"></span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label fw-semibold text-olive">Instructions</label>
+                                            <input name="Medicines[0].Instructions" class="form-control" placeholder="After food" />
+                                            <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[0].Instructions"></span>
+                                        </div>
+                                    </div>
+                                    <!-- Remove button for additional medicines (hidden for first item) -->
+                                    <div class="text-end mt-2 remove-button" style="display: none;">
+                                        <button type="button" class="btn btn-sm btn-danger remove-medicine">
+                                            <i class="fas fa-trash me-1"></i>Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="medicine-validation" class="text-danger"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="@Url.Action("PatientDetails", new { patientId = Model.PatientId, appointmentId = Model.AppointmentId })"
+                                       class="btn btn-secondary">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-olive" id="submitButton">
+                                        <i class="fas fa-save me-1"></i>Save Prescription
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let medicineIndex = 1; // Start from 1 since we have one initial item
+
+        // Add medicine item
+        document.getElementById('add-medicine').addEventListener('click', function() {
+            const container = document.getElementById('medicines-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'medicine-item border p-3 mb-3 rounded';
+            newItem.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold text-olive">Medicine *</label>
+                        <select name="Medicines[${medicineIndex}].MedicineId" class="form-control medicine-select" required>
+                            <option value="">Select Medicine</option>
+        @foreach (var medicine in ViewBag.Medicines as List<ClinicalManagementSystem2025.Models.Medicine>)
+        {
+                                    <option value="@medicine.MedicineId">@medicine.MedicineName</option>
+        }
+                        </select>
+                        <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[${medicineIndex}].MedicineId"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold text-olive">Dosage *</label>
+                        <input name="Medicines[${medicineIndex}].Dosage" class="form-control" placeholder="5mg" required />
+                        <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[${medicineIndex}].Dosage"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold text-olive">Frequency *</label>
+                        <input name="Medicines[${medicineIndex}].Frequency" class="form-control" placeholder="Once daily" required />
+                        <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[${medicineIndex}].Frequency"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold text-olive">Duration *</label>
+                        <input name="Medicines[${medicineIndex}].Duration" class="form-control" placeholder="7 days" required />
+                        <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[${medicineIndex}].Duration"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold text-olive">Instructions</label>
+                        <input name="Medicines[${medicineIndex}].Instructions" class="form-control" placeholder="After food" />
+                        <span class="text-danger small medicine-validation" data-valmsg-for="Medicines[${medicineIndex}].Instructions"></span>
+                    </div>
+                </div>
+                <div class="text-end mt-2 remove-button">
+                    <button type="button" class="btn btn-sm btn-danger remove-medicine">
+                        <i class="fas fa-trash me-1"></i>Remove
+                    </button>
+                </div>
+            `;
+            container.appendChild(newItem);
+            medicineIndex++;
+
+            // Show remove button for all items if there's more than one
+            updateRemoveButtons();
+        });
+
+        // Remove medicine item
+        $(document).on('click', '.remove-medicine', function() {
+            if ($('.medicine-item').length > 1) {
+                $(this).closest('.medicine-item').remove();
+                reindexMedicineItems();
+                updateRemoveButtons();
+            }
+        });
+
+        function reindexMedicineItems() {
+            $('.medicine-item').each(function(index) {
+                $(this).find('select, input').each(function() {
+                    const name = $(this).attr('name');
+                    if (name) {
+                        const newName = name.replace(/Medicines\[\d+\]/, `Medicines[${index}]`);
+                        $(this).attr('name', newName);
+
+                        // Update validation messages
+                        const validationSpan = $(this).siblings('.medicine-validation');
+                        if (validationSpan.length) {
+                            validationSpan.attr('data-valmsg-for', newName);
+                        }
+                    }
+                });
+            });
+            medicineIndex = $('.medicine-item').length;
+        }
+
+        function updateRemoveButtons() {
+            const medicineItems = $('.medicine-item');
+            if (medicineItems.length > 1) {
+                $('.remove-button').show();
+            } else {
+                $('.remove-button').hide();
+            }
+        }
+
+        // Form validation
+        $('#prescriptionForm').on('submit', function(e) {
+            const medicineItems = $('.medicine-item');
+            let isValid = true;
+
+            // Check if at least one medicine is filled
+            let hasValidMedicine = false;
+            medicineItems.each(function() {
+                const medicineId = $(this).find('.medicine-select').val();
+                const dosage = $(this).find('input[name*="Dosage"]').val();
+                const frequency = $(this).find('input[name*="Frequency"]').val();
+                const duration = $(this).find('input[name*="Duration"]').val();
+
+                if (medicineId && dosage && frequency && duration) {
+                    hasValidMedicine = true;
+                }
+            });
+
+            if (!hasValidMedicine) {
+                $('#medicine-validation').text('Please add at least one medicine with all required fields.');
+                isValid = false;
+            } else {
+                $('#medicine-validation').text('');
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Show loading state
+            $('#submitButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Saving...');
+        });
+
+        // Initialize remove buttons visibility
+        $(document).ready(function() {
+            updateRemoveButtons();
+        });
+    </script>
+}

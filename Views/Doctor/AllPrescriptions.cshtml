@@ -1,0 +1,93 @@
+﻿@model List<ClinicalManagementSystem2025.Models.Prescription>
+@{
+    ViewData["Title"] = "All Prescriptions";
+    Layout = "_DoctorLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-prescription me-2"></i>All Prescriptions
+                        <span class="badge bg-light text-dark ms-2">@ViewBag.TotalPrescriptions Total</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover doctor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Patient</th>
+                                        <th>Diagnosis</th>
+                                        <th>Medicines</th>
+                                        <th>Instructions</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var prescription in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@prescription.PrescriptionDate.ToString("MMM dd, yyyy")</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Patient ID: @prescription.PatientId</strong>
+                                            </td>
+                                            <td>
+                                                <div class="diagnosis-text">
+                                                    @prescription.Diagnosis
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">Medicines</span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@(prescription.Instructions ?? "No special instructions")</small>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("PatientDetails", new { patientId = prescription.PatientId })"
+                                                   class="btn btn-olive btn-sm">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-prescription icon-large text-muted mb-3"></i>
+                            <h5 class="text-muted">No Prescriptions Found</h5>
+                            <p class="text-muted">No prescriptions have been created yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .diagnosis-text {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>

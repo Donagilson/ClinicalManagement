@@ -1,0 +1,97 @@
+﻿@model List<ClinicalManagementSystem2025.ViewModels.PatientMedicalHistoryViewModel>
+@{
+    ViewData["Title"] = "All Patients - Medical History";
+    Layout = "_DoctorLayout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-header olive-bg">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-users me-2"></i>All Patients - Medical History
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="doctor-card">
+                <div class="doctor-card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover doctor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Contact</th>
+                                        <th>Last Visit</th>
+                                        <th>Prescriptions</th>
+                                        <th>Lab Reports</th>
+                                        <th>Consultations</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var patientHistory in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle-sm me-3">
+                                                        @patientHistory.Patient.FirstName[0]@patientHistory.Patient.LastName[0]
+                                                    </div>
+                                                    <div>
+                                                        <strong>@patientHistory.Patient.FullName</strong>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            @patientHistory.Patient.Gender,
+                                                            @(DateTime.Now.Year - patientHistory.Patient.DateOfBirth.Year)yrs
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small>@patientHistory.Patient.Phone</small>
+                                                <br>
+                                                <small class="text-muted">@patientHistory.Patient.Email</small>
+                                            </td>
+                                            <td>@patientHistory.LastVisitDisplay</td>
+                                            <td>
+                                                <span class="badge bg-info">@patientHistory.TotalPrescriptions</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-warning">@patientHistory.TotalLabReports</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">@patientHistory.TotalConsultations</span>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("PatientDetails", new { patientId = patientHistory.Patient.PatientId })"
+                                                   class="btn btn-olive btn-sm">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-users icon-large text-muted mb-3"></i>
+                            <h5 class="text-muted">No Patients Found</h5>
+                            <p class="text-muted">No patients have consulted with you yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
