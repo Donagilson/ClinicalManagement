@@ -1,0 +1,422 @@
+@model ClinicalManagementSystem2025.Models.PharmacyInventory
+
+@{
+    ViewData["Title"] = "Add to Inventory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-plus me-2"></i>Add to Inventory
+                    </h2>
+                    <p class="text-muted mb-0">Add medicines to pharmacy inventory or update existing stock</p>
+                </div>
+                <div>
+                    <a asp-action="Inventory" class="btn btn-outline-info me-2">
+                        <i class="fas fa-boxes me-1"></i>View Inventory
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (ViewBag.Medicine != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info border-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            <strong>Selected Medicine:</strong> @ViewBag.Medicine.MedicineName (@ViewBag.Medicine.MedicineCode)
+                            <br>
+                            <small class="text-muted">Unit Price: ₹@ViewBag.Medicine.UnitPrice.ToString("F2") | Category: @(ViewBag.Medicine.Category ?? "General")</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-boxes me-2"></i>Inventory Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddInventory" method="post" id="inventoryForm">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="InventoryId" />
+                        <input type="hidden" asp-for="CreatedDate" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="MedicineName" class="form-label">Medicine Name *</label>
+                                <input type="text" name="MedicineName" id="MedicineName" class="form-control" required placeholder="Enter medicine name" />
+                                <span class="text-danger" id="medicineNameError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="MedicineCode" class="form-label">Medicine Code *</label>
+                                <input type="text" name="MedicineCode" id="MedicineCode" class="form-control" required placeholder="Enter medicine code" />
+                                <span class="text-danger" id="medicineCodeError"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="GenericName" class="form-label">Generic Name</label>
+                                <input type="text" name="GenericName" id="GenericName" class="form-control" placeholder="Enter generic name" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="Category" class="form-label">Category</label>
+                                <select name="Category" id="Category" class="form-select">
+                                    <option value="">Select Category</option>
+                                    <option value="Analgesic">Analgesic</option>
+                                    <option value="Antibiotic">Antibiotic</option>
+                                    <option value="Anti-inflammatory">Anti-inflammatory</option>
+                                    <option value="Antihistamine">Antihistamine</option>
+                                    <option value="Cardiovascular">Cardiovascular</option>
+                                    <option value="Dermatological">Dermatological</option>
+                                    <option value="Gastrointestinal">Gastrointestinal</option>
+                                    <option value="Respiratory">Respiratory</option>
+                                    <option value="Vitamins">Vitamins</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="CurrentStock" class="form-label">Current Stock *</label>
+                                <input type="number" name="CurrentStock" id="CurrentStock" class="form-control" min="1" required placeholder="Enter current stock quantity" />
+                                <span class="text-danger" id="currentStockError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="MinStockLevel" class="form-label">Minimum Stock Level *</label>
+                                <input type="number" name="MinStockLevel" id="MinStockLevel" class="form-control" min="0" required placeholder="Enter minimum stock level" />
+                                <span class="text-danger" id="minStockError"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="MaxStockLevel" class="form-label">Maximum Stock Level *</label>
+                                <input type="number" name="MaxStockLevel" id="MaxStockLevel" class="form-control" min="1" required placeholder="Enter maximum stock level" />
+                                <span class="text-danger" id="maxStockError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="CostPrice" class="form-label">Cost Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" name="CostPrice" id="CostPrice" class="form-control" step="0.01" min="0.01" required placeholder="0.00" />
+                                </div>
+                                <span class="text-danger" id="costPriceError"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="SellingPrice" class="form-label">Selling Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" name="SellingPrice" id="SellingPrice" class="form-control" step="0.01" min="0.01" required placeholder="0.00" />
+                                </div>
+                                <span class="text-danger" id="sellingPriceError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="BatchNumber" class="form-label">Batch Number</label>
+                                <input type="text" name="BatchNumber" id="BatchNumber" class="form-control" placeholder="Enter batch number" />
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="Supplier" class="form-label">Supplier</label>
+                                <input type="text" name="Supplier" id="Supplier" class="form-control" placeholder="Enter supplier name" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="ExpiryDate" class="form-label">Expiry Date</label>
+                                <input type="date" name="ExpiryDate" id="ExpiryDate" class="form-control" />
+                            </div>
+                        </div>
+
+                        <!-- Success/Error Messages -->
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-success alert-dismissible fade show border-success">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        <strong>Success!</strong> @TempData["SuccessMessage"]
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-danger alert-dismissible fade show border-danger">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Error!</strong> @TempData["ErrorMessage"]
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" onclick="history.back()">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </button>
+                            <button type="submit" class="btn btn-purple" id="submitBtn" onclick="submitForm()">
+                                <i class="fas fa-save me-1"></i>
+                                @if (Model.InventoryId > 0)
+                                {
+                                    <span>Update Inventory</span>
+                                }
+                                else
+                                {
+                                    <span>Add to Inventory</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #7b68ee;
+    box-shadow: 0 0 0 0.2rem rgba(123, 104, 238, 0.25);
+}
+
+.alert {
+    border-radius: 8px;
+}
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateMedicineInfo(medicineId) {
+            if (medicineId) {
+                // Find the selected option and get its data attributes
+                const selectedOption = document.querySelector(`option[value="${medicineId}"]`);
+                if (selectedOption) {
+                    const price = selectedOption.getAttribute('data-price');
+                    const code = selectedOption.getAttribute('data-code');
+                    const name = selectedOption.getAttribute('data-name');
+
+                    // Update selling price if empty
+                    const sellingPriceInput = document.getElementById('SellingPrice');
+                    if (sellingPriceInput && !sellingPriceInput.value) {
+                        sellingPriceInput.value = parseFloat(price).toFixed(2);
+                    }
+
+                    // Show medicine info
+                    const alertDiv = document.querySelector('.alert-info');
+                    if (alertDiv) {
+                        alertDiv.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <div>
+                                    <strong>Selected Medicine:</strong> ${name} (${code})
+                                    <br>
+                                    <small class="text-muted">Unit Price: ₹${price} | Category: General</small>
+                                </div>
+                            </div>
+                        `;
+                        alertDiv.style.display = 'block';
+                    }
+                }
+            } else {
+                // Hide medicine info if no medicine selected
+                const alertDiv = document.querySelector('.alert-info');
+                if (alertDiv) {
+                    alertDiv.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AddInventory page loaded');
+            updateSubmitButtonState();
+        });
+
+        // Update submit button state based on form completion
+        function updateSubmitButtonState() {
+            const submitBtn = document.getElementById('submitBtn');
+            const medicineName = document.getElementById('MedicineName');
+            const medicineCode = document.getElementById('MedicineCode');
+            const currentStock = document.getElementById('CurrentStock');
+
+            if (submitBtn && medicineName && medicineCode && currentStock) {
+                const hasRequiredFields = medicineName.value.trim() &&
+                                        medicineCode.value.trim() &&
+                                        currentStock.value &&
+                                        parseInt(currentStock.value) >= 1;
+
+                submitBtn.disabled = !hasRequiredFields;
+
+                if (!hasRequiredFields) {
+                    submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Fill Required Fields';
+                } else {
+                    submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Add to Inventory';
+                }
+            }
+        }
+
+        // Form submission debugging
+        function submitForm() {
+            const form = document.getElementById('inventoryForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            console.log('Form submission initiated...');
+
+            // Check if all required fields are filled
+            const medicineName = document.getElementById('MedicineName');
+            const medicineCode = document.getElementById('MedicineCode');
+            const currentStock = document.getElementById('CurrentStock');
+            const minStock = document.getElementById('MinStockLevel');
+            const maxStock = document.getElementById('MaxStockLevel');
+            const costPrice = document.getElementById('CostPrice');
+            const sellingPrice = document.getElementById('SellingPrice');
+
+            let isValid = true;
+            let errorMessage = '';
+
+            // Validate required fields
+            if (!medicineName.value.trim()) {
+                errorMessage += 'Medicine Name is required. ';
+                isValid = false;
+            }
+            if (!medicineCode.value.trim()) {
+                errorMessage += 'Medicine Code is required. ';
+                isValid = false;
+            }
+            if (!currentStock.value || parseInt(currentStock.value) < 1) {
+                errorMessage += 'Current Stock must be at least 1. ';
+                isValid = false;
+            }
+            if (!minStock.value || parseInt(minStock.value) < 0) {
+                errorMessage += 'Minimum Stock must be at least 0. ';
+                isValid = false;
+            }
+            if (!maxStock.value || parseInt(maxStock.value) < 1) {
+                errorMessage += 'Maximum Stock must be at least 1. ';
+                isValid = false;
+            }
+            if (!costPrice.value || parseFloat(costPrice.value) < 0.01) {
+                errorMessage += 'Cost Price must be at least 0.01. ';
+                isValid = false;
+            }
+            if (!sellingPrice.value || parseFloat(sellingPrice.value) < 0.01) {
+                errorMessage += 'Selling Price must be at least 0.01. ';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                console.log('Validation failed:', errorMessage);
+                alert('Please fix the following errors:\n' + errorMessage);
+                return;
+            }
+
+            // Check if form is valid
+            if (form.checkValidity()) {
+                console.log('Form validation passed. Submitting...');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+                form.submit();
+            } else {
+                console.log('Form validation failed.');
+                form.reportValidity();
+            }
+        }
+
+        // Debug form data before submission
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            console.log('Form submitting...');
+            const formData = new FormData(this);
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+        });
+
+        // Real-time validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const requiredFields = ['MedicineName', 'MedicineCode', 'CurrentStock', 'MinStockLevel', 'MaxStockLevel', 'CostPrice', 'SellingPrice'];
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', updateSubmitButtonState);
+                    field.addEventListener('blur', updateSubmitButtonState);
+                }
+            });
+        });
+    </script>
+}

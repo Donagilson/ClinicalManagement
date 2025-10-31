@@ -1,0 +1,167 @@
+@model ClinicalManagementSystem2025.Models.Medicine
+
+@{
+    ViewData["Title"] = "Delete Medicine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-trash me-2"></i>Delete Medicine
+                    </h2>
+                    <p class="text-muted mb-0">Confirm deletion of medicine</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-purple">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-trash fa-4x text-danger mb-3"></i>
+                        <h4 class="text-danger">Delete Medicine</h4>
+                        <p class="text-muted">This action cannot be undone.</p>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="info-item">
+                                <label class="info-label">Medicine Code</label>
+                                <div class="info-value">
+                                    <span class="badge bg-danger fs-6">@Model.MedicineCode</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-item">
+                                <label class="info-label">Medicine Name</label>
+                                <div class="info-value">@Model.MedicineName</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Category</label>
+                                <div class="info-value">@(Model.Category ?? "General")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Unit Price</label>
+                                <div class="info-value">₹@Model.UnitPrice.ToString("F2")</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-item">
+                                <label class="info-label">Description</label>
+                                <div class="info-value">@(Model.Description ?? "No description available")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Warning:</strong> Deleting this medicine will also remove it from all inventory records and dispensing history. This action cannot be undone.
+                    </div>
+
+                    <form asp-action="DeleteConfirmed" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MedicineId" />
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" data-bs-dismiss="modal" onclick="history.back()">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Delete Medicine
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.border-danger {
+    border-color: #dc3545 !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.info-item {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #7b68ee;
+    height: 100%;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+</style>

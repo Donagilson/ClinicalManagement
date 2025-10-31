@@ -1,0 +1,222 @@
+@model ClinicalManagementSystem2025.Models.Medicine
+
+@{
+    ViewData["Title"] = "Add Medicine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-plus me-2"></i>Add New Medicine
+                    </h2>
+                    <p class="text-muted mb-0">Add a new medicine to the pharmacy inventory</p>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-purple">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-pills me-2"></i>Medicine Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="MedicineName" class="form-label">Medicine Name *</label>
+                                <input asp-for="MedicineName" class="form-control" placeholder="Enter medicine name" required />
+                                <span asp-validation-for="MedicineName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="MedicineCode" class="form-label">Medicine Code</label>
+                                <input asp-for="MedicineCode" class="form-control" placeholder="Enter unique code" />
+                                <span asp-validation-for="MedicineCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="GenericName" class="form-label">Generic Name</label>
+                                <input asp-for="GenericName" class="form-control" placeholder="Enter generic name" required />
+                                <span asp-validation-for="GenericName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Category" class="form-label">Category</label>
+                                <select asp-for="Category" class="form-select">
+                                    <option value="">Select Category</option>
+                                    <option value="Analgesic">Analgesic</option>
+                                    <option value="Antibiotic">Antibiotic</option>
+                                    <option value="Anti-inflammatory">Anti-inflammatory</option>
+                                    <option value="Antihistamine">Antihistamine</option>
+                                    <option value="Cardiovascular">Cardiovascular</option>
+                                    <option value="Dermatological">Dermatological</option>
+                                    <option value="Gastrointestinal">Gastrointestinal</option>
+                                    <option value="Respiratory">Respiratory</option>
+                                    <option value="Vitamins">Vitamins</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="MedicineType" class="form-label">Medicine Type</label>
+                                <select asp-for="MedicineType" class="form-select">
+                                    <option value="">Select Type</option>
+                                    <option value="Tablet">Tablet</option>
+                                    <option value="Capsule">Capsule</option>
+                                    <option value="Liquid">Liquid</option>
+                                    <option value="Injection">Injection</option>
+                                    <option value="Cream">Cream</option>
+                                    <option value="Ointment">Ointment</option>
+                                    <option value="Drops">Drops</option>
+                                    <option value="Inhaler">Inhaler</option>
+                                </select>
+                                <span asp-validation-for="MedicineType" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Strength" class="form-label">Strength</label>
+                                <select asp-for="Strength" class="form-select">
+                                    <option value="">Select Strength</option>
+                                    <option value="50mg">50mg</option>
+                                    <option value="100mg">100mg</option>
+                                    <option value="250mg">250mg</option>
+                                    <option value="500mg">500mg</option>
+                                    <option value="1000mg">1000mg</option>
+                                    <option value="5ml">5ml</option>
+                                    <option value="10ml">10ml</option>
+                                    <option value="15ml">15ml</option>
+                                    <option value="20ml">20ml</option>
+                                    <option value="25ml">25ml</option>
+                                    <option value="50mg/ml">50mg/ml</option>
+                                    <option value="100mg/ml">100mg/ml</option>
+                                    <option value="200mg/ml">200mg/ml</option>
+                                    <option value="1 tablet">1 tablet</option>
+                                    <option value="2 tablets">2 tablets</option>
+                                    <option value="3 tablets">3 tablets</option>
+                                    <option value="As directed">As directed</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Strength" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="DosageForm" class="form-label">Dosage Form</label>
+                                <select asp-for="DosageForm" class="form-select">
+                                    <option value="">Select Dosage Form</option>
+                                    <option value="Oral">Oral</option>
+                                    <option value="Topical">Topical</option>
+                                    <option value="Injection">Injection</option>
+                                    <option value="Inhalation">Inhalation</option>
+                                    <option value="Rectal">Rectal</option>
+                                </select>
+                                <span asp-validation-for="DosageForm" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="UnitPrice" class="form-label">Unit Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0.01" placeholder="0.00" required />
+                                </div>
+                                <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Prescription Required</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" asp-for="RequiresPrescription" />
+                                    <label class="form-check-label" asp-for="RequiresPrescription">
+                                        Requires doctor's prescription
+                                    </label>
+                                </div>
+                                <span asp-validation-for="RequiresPrescription" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" onclick="history.back()">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </button>
+                            <button type="submit" class="btn btn-purple">
+                                <i class="fas fa-save me-1"></i>Add Medicine
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #7b68ee;
+    box-shadow: 0 0 0 0.2rem rgba(123, 104, 238, 0.25);
+}
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

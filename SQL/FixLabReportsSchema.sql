@@ -1,0 +1,1 @@
+USE ClinicalManagementDB;\nGO\n\n-- Remove NormalRange column from TblLabReports if it exists\nIF COL_LENGTH('dbo.TblLabReports', 'NormalRange') IS NOT NULL\nBEGIN\n    ALTER TABLE dbo.TblLabReports DROP COLUMN NormalRange;\n    PRINT 'NormalRange column removed from TblLabReports';\nEND\nELSE\nBEGIN\n    PRINT 'NormalRange column does not exist in TblLabReports';\nEND\n\nGO

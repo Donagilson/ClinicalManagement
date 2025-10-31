@@ -1,0 +1,266 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.DispensedMedication>
+
+@{
+    ViewData["Title"] = "Dispensing History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-history me-2"></i>Dispensing History
+                    </h2>
+                    <p class="text-muted mb-0">View all dispensed medications</p>
+                </div>
+                <div>
+                    <a asp-action="Dispense" class="btn btn-purple me-2">
+                        <i class="fas fa-plus me-1"></i>Dispense New
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Date From</label>
+                            <input type="date" id="dateFrom" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date To</label>
+                            <input type="date" id="dateTo" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Patient ID</label>
+                            <input type="number" id="patientFilter" class="form-control" placeholder="Filter by patient" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="button" class="btn btn-outline-purple" onclick="applyFilters()">
+                                    <i class="fas fa-filter me-1"></i>Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dispensing History Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-capsules me-2"></i>Dispensed Medications
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Medicine</th>
+                                    <th>Patient</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                    <th>Dosage</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var dispensed in Model)
+                                    {
+                                        <tr>
+                                            <td>@dispensed.DispensedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>
+                                                <strong>@dispensed.Medicine?.MedicineName</strong>
+                                                <br>
+                                                <small class="text-muted">@dispensed.Medicine?.MedicineCode</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">ID: @dispensed.PatientId</span>
+                                            </td>
+                                            <td>@dispensed.Quantity</td>
+                                            <td>₹@dispensed.UnitPrice.ToString("F2")</td>
+                                            <td><strong>₹@dispensed.TotalAmount.ToString("F2")</strong></td>
+                                            <td>
+                                                <small>@(dispensed.Dosage ?? "N/A")</small>
+                                                @if (!string.IsNullOrWhiteSpace(dispensed.Frequency))
+                                                {
+                                                    <br>
+                                                    <small class="text-muted">@dispensed.Frequency</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @(dispensed.PaymentStatus == "Paid" ? "bg-success" : "bg-warning")">
+                                                    @dispensed.PaymentStatus
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">@(dispensed.PaymentMethod ?? "N/A")</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-info" title="View Details" onclick="viewDetails(@dispensed.DispensedId)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" title="Edit" onclick="editDispensed(@dispensed.DispensedId)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-4">
+                                            <i class="fas fa-capsules fa-3x mb-2 text-muted"></i>
+                                            <p class="mb-0">No medications have been dispensed yet.</p>
+                                            <a asp-action="Dispense" class="btn btn-purple btn-sm mt-2">
+                                                <i class="fas fa-plus me-1"></i>Dispense First Medicine
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dispensed Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dispensed Medication Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                <!-- Details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printReceipt()">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+</style>
+
+<script>
+function viewDetails(dispensedId) {
+    // In a real implementation, this would make an AJAX call to get details
+    // For now, just show a placeholder
+    const detailsContent = `
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="info-item">
+                    <label class="info-label">Dispensed ID</label>
+                    <div class="info-value">#${dispensedId}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-item">
+                    <label class="info-label">Date</label>
+                    <div class="info-value">${new Date().toLocaleString()}</div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle me-1"></i>
+            Detailed information would be loaded here in a real implementation.
+        </div>
+    `;
+
+    document.getElementById('detailsContent').innerHTML = detailsContent;
+    new bootstrap.Modal(document.getElementById('detailsModal')).show();
+}
+
+function editDispensed(dispensedId) {
+    // In a real implementation, this would navigate to an edit page
+    alert(`Edit functionality for dispensed medication #${dispensedId} would be implemented here.`);
+}
+
+function applyFilters() {
+    // In a real implementation, this would filter the table based on the selected criteria
+    alert('Filter functionality would be implemented here.');
+}
+
+function printReceipt() {
+    window.print();
+}
+</script>

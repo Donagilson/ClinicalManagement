@@ -1,0 +1,800 @@
+@model ClinicalManagementSystem2025.Models.MedicalNote
+
+@{
+    ViewData["Title"] = "Add Medical Note";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-notes-medical me-2"></i>Add Medical Note
+                    </h2>
+                    <p class="text-muted mb-0">Create a new medical note for <strong id="patientNameHeader">
+                        @if (ViewBag.PatientInfo != null)
+                        {
+                            var patient = ViewBag.PatientInfo as ClinicalManagementSystem2025.Models.Patient;
+                            @patient.FullName <span class="badge bg-purple ms-1">@patient.MmrId</span>
+                        }
+                        else
+                        {
+                            <text>Patient <span class="badge bg-purple ms-1">CS@(ViewBag.PatientId?.ToString("00") ?? "00")</span></text>
+                        }
+                    </strong></p>
+                </div>
+                <div>
+                    <a asp-action="PatientDetails" asp-route-patientId="@ViewBag.PatientId" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Patient Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Medical Note Form -->
+    <form asp-action="AddMedicalNote" method="post" id="medicalNoteForm">
+        @Html.AntiForgeryToken()
+        
+        <!-- Hidden Fields -->
+        <input asp-for="PatientId" type="hidden" />
+        <input asp-for="DoctorId" type="hidden" />
+        <input asp-for="AppointmentId" type="hidden" />
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-8">
+                <!-- Basic Information Card -->
+                <div class="card shadow-sm border-purple mb-4">
+                    <div class="card-header bg-purple text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Note Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Note Title -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Title" class="form-label fw-bold">Note Title *</label>
+                                <select asp-for="Title" class="form-select" required>
+                                    <option value="">-- Select Note Title --</option>
+                                    <option value="Regular Checkup">Regular Checkup</option>
+                                    <option value="Follow-up Visit">Follow-up Visit</option>
+                                    <option value="Initial Consultation">Initial Consultation</option>
+                                    <option value="Emergency Consultation">Emergency Consultation</option>
+                                    <option value="Routine Physical Exam">Routine Physical Exam</option>
+                                    <option value="Prescription Refill">Prescription Refill</option>
+                                    <option value="Lab Results Review">Lab Results Review</option>
+                                    <option value="Specialist Consultation">Specialist Consultation</option>
+                                    <option value="Pre-operative Assessment">Pre-operative Assessment</option>
+                                    <option value="Post-operative Follow-up">Post-operative Follow-up</option>
+                                    <option value="Chronic Disease Management">Chronic Disease Management</option>
+                                    <option value="Vaccination Visit">Vaccination Visit</option>
+                                    <option value="Mental Health Consultation">Mental Health Consultation</option>
+                                    <option value="Preventive Care Visit">Preventive Care Visit</option>
+                                    <option value="Second Opinion">Second Opinion</option>
+                                </select>
+                                <span asp-validation-for="Title" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Note Type -->
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="NoteType" class="form-label fw-bold">Note Type</label>
+                                <select asp-for="NoteType" class="form-select">
+                                    <option value="Consultation">Consultation</option>
+                                    <option value="Follow-up">Follow-up</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Routine">Routine</option>
+                                    <option value="Specialist">Specialist</option>
+                                </select>
+                            </div>
+
+                            <!-- Priority -->
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Priority" class="form-label fw-bold">Priority</label>
+                                <select asp-for="Priority" class="form-select">
+                                    <option value="Normal">Normal</option>
+                                    <option value="High">High</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Medical Notes -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="Notes" class="form-label fw-bold">Medical Notes *</label>
+                                <textarea asp-for="Notes" class="form-control" rows="6" 
+                                          placeholder="Enter detailed medical notes, observations, symptoms, examination findings..." required></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                                <small class="text-muted">Describe patient's condition, symptoms, examination findings, and observations</small>
+                            </div>
+                        </div>
+
+                        <!-- Diagnosis -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="Diagnosis" class="form-label fw-bold">Diagnosis</label>
+                                <textarea asp-for="Diagnosis" class="form-control" rows="3" 
+                                          placeholder="Enter primary and secondary diagnoses..."></textarea>
+                                <small class="text-muted">Primary and secondary diagnoses based on examination</small>
+                            </div>
+                        </div>
+
+                        <!-- Prescription -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">Prescription</label>
+                                
+                                <!-- Prescription Builder -->
+                                <div class="card border-light">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-pills me-2"></i>Add Medications</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="prescriptionList">
+                                            <!-- Prescription items will be added here -->
+                                        </div>
+                                        
+                                        <!-- Add New Prescription Row -->
+                                        <div class="row mb-3" id="newPrescriptionRow">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Medicine</label>
+                                                <select class="form-select" id="medicineSelect">
+                                                    <option value="">-- Select Medicine --</option>
+                                                    <option value="Paracetamol">Paracetamol</option>
+                                                    <option value="Ibuprofen">Ibuprofen</option>
+                                                    <option value="Aspirin">Aspirin</option>
+                                                    <option value="Amoxicillin">Amoxicillin</option>
+                                                    <option value="Ciprofloxacin">Ciprofloxacin</option>
+                                                    <option value="Metformin">Metformin</option>
+                                                    <option value="Lisinopril">Lisinopril</option>
+                                                    <option value="Atorvastatin">Atorvastatin</option>
+                                                    <option value="Omeprazole">Omeprazole</option>
+                                                    <option value="Cetirizine">Cetirizine</option>
+                                                    <option value="Loratadine">Loratadine</option>
+                                                    <option value="Diclofenac">Diclofenac</option>
+                                                    <option value="Prednisolone">Prednisolone</option>
+                                                    <option value="Salbutamol">Salbutamol</option>
+                                                    <option value="Insulin">Insulin</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Dosage</label>
+                                                <select class="form-select" id="dosageSelect">
+                                                    <option value="">-- Dosage --</option>
+                                                    <option value="250mg">250mg</option>
+                                                    <option value="500mg">500mg</option>
+                                                    <option value="1000mg">1000mg</option>
+                                                    <option value="5mg">5mg</option>
+                                                    <option value="10mg">10mg</option>
+                                                    <option value="20mg">20mg</option>
+                                                    <option value="25mg">25mg</option>
+                                                    <option value="50mg">50mg</option>
+                                                    <option value="100mg">100mg</option>
+                                                    <option value="1 tablet">1 tablet</option>
+                                                    <option value="2 tablets">2 tablets</option>
+                                                    <option value="1 capsule">1 capsule</option>
+                                                    <option value="5ml">5ml</option>
+                                                    <option value="10ml">10ml</option>
+                                                    <option value="1 puff">1 puff</option>
+                                                    <option value="2 puffs">2 puffs</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Frequency</label>
+                                                <select class="form-select" id="frequencySelect">
+                                                    <option value="">-- Frequency --</option>
+                                                    <option value="Once daily">Once daily</option>
+                                                    <option value="Twice daily">Twice daily</option>
+                                                    <option value="Three times daily">Three times daily</option>
+                                                    <option value="Four times daily">Four times daily</option>
+                                                    <option value="Every 4 hours">Every 4 hours</option>
+                                                    <option value="Every 6 hours">Every 6 hours</option>
+                                                    <option value="Every 8 hours">Every 8 hours</option>
+                                                    <option value="Every 12 hours">Every 12 hours</option>
+                                                    <option value="Before meals">Before meals</option>
+                                                    <option value="After meals">After meals</option>
+                                                    <option value="With meals">With meals</option>
+                                                    <option value="At bedtime">At bedtime</option>
+                                                    <option value="As needed">As needed</option>
+                                                    <option value="Weekly">Weekly</option>
+                                                    <option value="Monthly">Monthly</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Duration</label>
+                                                <select class="form-select" id="durationSelect">
+                                                    <option value="">-- Duration --</option>
+                                                    <option value="3 days">3 days</option>
+                                                    <option value="5 days">5 days</option>
+                                                    <option value="7 days">7 days</option>
+                                                    <option value="10 days">10 days</option>
+                                                    <option value="14 days">14 days</option>
+                                                    <option value="1 month">1 month</option>
+                                                    <option value="2 months">2 months</option>
+                                                    <option value="3 months">3 months</option>
+                                                    <option value="6 months">6 months</option>
+                                                    <option value="Ongoing">Ongoing</option>
+                                                    <option value="As needed">As needed</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-purple d-block" onclick="addPrescription()">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hidden field to store final prescription -->
+                                <textarea asp-for="Prescription" class="form-control d-none" id="prescriptionHidden"></textarea>
+                                <small class="text-muted">Add medications one by one using the dropdowns above</small>
+                            </div>
+                        </div>
+
+                        <!-- Lab Tests -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">Lab Tests</label>
+                                
+                                <!-- Lab Test Builder -->
+                                <div class="card border-light">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-flask me-2"></i>Request Lab Tests</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="labTestList">
+                                            <!-- Lab test items will be added here -->
+                                        </div>
+                                        
+                                        <!-- Add New Lab Test Row -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-5">
+                                                <label class="form-label">Test Name</label>
+                                                <select class="form-select" id="testSelect">
+                                                    <option value="">-- Select Test --</option>
+                                                    <option value="CBC">Complete Blood Count (CBC)</option>
+                                                    <option value="CMP">Comprehensive Metabolic Panel (CMP)</option>
+                                                    <option value="Lipid Panel">Lipid Panel</option>
+                                                    <option value="TSH">Thyroid Stimulating Hormone (TSH)</option>
+                                                    <option value="HbA1c">Hemoglobin A1c</option>
+                                                    <option value="Urinalysis">Urinalysis</option>
+                                                    <option value="ECG">Electrocardiogram (ECG)</option>
+                                                    <option value="X-ray">X-ray</option>
+                                                    <option value="MRI">Magnetic Resonance Imaging (MRI)</option>
+                                                    <option value="CT Scan">CT Scan</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label">Notes</label>
+                                                <input type="text" class="form-control" id="testNotes" placeholder="Additional instructions...">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-purple d-block" onclick="addLabTest()">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hidden field to store final lab tests -->
+                                <textarea asp-for="LabTests" class="form-control d-none" id="labTestsHidden"></textarea>
+                                <small class="text-muted">Add lab tests as needed</small>
+                            </div>
+                        </div>
+
+                        <!-- Follow-up Instructions -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="FollowUpInstructions" class="form-label fw-bold">Follow-up Instructions</label>
+                                <textarea asp-for="FollowUpInstructions" class="form-control" rows="3" 
+                                          placeholder="Enter follow-up care instructions, lifestyle recommendations..."></textarea>
+                                <small class="text-muted">Care instructions, lifestyle changes, and recommendations</small>
+                            </div>
+                        </div>
+
+                        <!-- Next Appointment Date -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NextAppointmentDate" class="form-label fw-bold">Next Appointment Date</label>
+                                <input asp-for="NextAppointmentDate" type="date" class="form-control" 
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                <small class="text-muted">Recommended date for next visit (optional)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Quick Actions & Info -->
+            <div class="col-md-4">
+                <!-- Quick Templates Card -->
+                <div class="card shadow-sm border-purple mb-4">
+                    <div class="card-header bg-purple text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>Quick Templates
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-purple btn-sm" onclick="loadTemplate('routine')">
+                                <i class="fas fa-stethoscope me-1"></i>Routine Checkup
+                            </button>
+                            <button type="button" class="btn btn-outline-purple btn-sm" onclick="loadTemplate('followup')">
+                                <i class="fas fa-calendar-check me-1"></i>Follow-up Visit
+                            </button>
+                            <button type="button" class="btn btn-outline-purple btn-sm" onclick="loadTemplate('prescription')">
+                                <i class="fas fa-prescription me-1"></i>Prescription Only
+                            </button>
+                            <button type="button" class="btn btn-outline-purple btn-sm" onclick="loadTemplate('emergency')">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Emergency Visit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Info Card -->
+                <div class="card shadow-sm border-purple mb-4">
+                    <div class="card-header bg-purple text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-user me-2"></i>Patient Information
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Patient:</strong> <span id="patientNameCard">@(ViewBag.PatientInfo?.FullName ?? "Loading...")</span></p>
+                        <p><strong>MMR No:</strong> 
+                            @if (ViewBag.PatientInfo != null)
+                            {
+                                var patient = ViewBag.PatientInfo as ClinicalManagementSystem2025.Models.Patient;
+                                <span class="badge bg-purple">@patient.MmrId</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-purple">CS@(ViewBag.PatientId?.ToString("00") ?? "00")</span>
+                            }
+                        </p>
+                        <p><strong>Date:</strong> @DateTime.Today.ToString("MMM dd, yyyy")</p>
+                        <p><strong>Time:</strong> @DateTime.Now.ToString("hh:mm tt")</p>
+                        @if (ViewBag.AppointmentId != null)
+                        {
+                            <p><strong>Appointment ID:</strong> @ViewBag.AppointmentId</p>
+                        }
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="card shadow-sm border-purple">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-purple">
+                                <i class="fas fa-save me-1"></i>Save Medical Note
+                            </button>
+                            <button type="button" class="btn btn-outline-purple" onclick="saveDraft()">
+                                <i class="fas fa-file-alt me-1"></i>Save as Draft
+                            </button>
+                            <a asp-action="PatientDetails" asp-route-patientId="@ViewBag.PatientId" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    border-color: #7b68ee;
+    box-shadow: 0 0 0 0.2rem rgba(123, 104, 238, 0.25);
+}
+
+.form-select:focus {
+    border-color: #7b68ee;
+    box-shadow: 0 0 0 0.2rem rgba(123, 104, 238, 0.25);
+}
+
+.prescription-item, .labtest-item {
+    background-color: #f8f9fa;
+    border-left: 3px solid #7b68ee;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto-hide alerts
+        setTimeout(() => {
+            $('.alert').alert('close');
+        }, 5000);
+
+        // Load patient name on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use real patient data from server
+            @if (ViewBag.PatientInfo != null)
+            {
+                var patient = ViewBag.PatientInfo as ClinicalManagementSystem2025.Models.Patient;
+                <text>
+                const patientName = '@patient.FullName';
+                document.getElementById('patientNameCard').textContent = patientName;
+                document.getElementById('patientNameHeader').textContent = patientName;
+                </text>
+            }
+            else
+            {
+                <text>
+                document.getElementById('patientNameCard').textContent = 'Loading...';
+                </text>
+            }
+            
+            // Load any saved draft
+            loadDraft();
+            
+            // Initialize prescription and lab test displays
+            updatePrescriptionDisplay();
+            updateLabTestDisplay();
+        });
+
+        // Load quick templates
+        function loadTemplate(type) {
+            const titleField = document.getElementById('Title');
+            const notesField = document.getElementById('Notes');
+            const typeField = document.getElementById('NoteType');
+            
+            switch(type) {
+                case 'routine':
+                    titleField.value = 'Regular Checkup';
+                    typeField.value = 'Routine';
+                    notesField.value = `Patient presented for routine health checkup.
+
+VITAL SIGNS:
+- Blood Pressure: 
+- Heart Rate: 
+- Temperature: 
+- Weight: 
+
+EXAMINATION:
+- General appearance: 
+- Cardiovascular: 
+- Respiratory: 
+- Abdomen: 
+
+ASSESSMENT:
+Overall health status appears good. Continue current health maintenance routine.`;
+                    break;
+                    
+                case 'followup':
+                    titleField.value = 'Follow-up Visit';
+                    typeField.value = 'Follow-up';
+                    notesField.value = `Follow-up visit for previously diagnosed condition.
+
+CURRENT STATUS:
+- Patient reports: 
+- Symptoms: 
+- Medication compliance: 
+
+EXAMINATION:
+- Relevant findings: 
+
+PROGRESS:
+- Improvement noted in: 
+- Areas of concern: `;
+                    break;
+                    
+                case 'prescription':
+                    titleField.value = 'Prescription Refill';
+                    typeField.value = 'Consultation';
+                    notesField.value = `Prescription consultation visit.
+
+CHIEF COMPLAINT:
+- 
+
+ASSESSMENT:
+- 
+
+PLAN:
+- Medication adjustment/new prescription as detailed below`;
+                    break;
+                    
+                case 'emergency':
+                    titleField.value = 'Emergency Consultation';
+                    typeField.value = 'Emergency';
+                    document.getElementById('Priority').value = 'High';
+                    notesField.value = `EMERGENCY CONSULTATION
+
+CHIEF COMPLAINT:
+- 
+
+HISTORY OF PRESENT ILLNESS:
+- 
+
+EXAMINATION:
+- 
+
+IMMEDIATE ASSESSMENT:
+- 
+
+URGENT ACTIONS TAKEN:
+- `;
+                    break;
+            }
+        }
+
+        // Prescription management
+        let prescriptionItems = [];
+        let labTestItems = [];
+
+        function addPrescription() {
+            const medicine = document.getElementById('medicineSelect').value;
+            const dosage = document.getElementById('dosageSelect').value;
+            const frequency = document.getElementById('frequencySelect').value;
+            const duration = document.getElementById('durationSelect').value;
+            
+            if (!medicine || !dosage || !frequency) {
+                alert('Please select medicine, dosage, and frequency.');
+                return;
+            }
+            
+            const prescriptionItem = {
+                id: Date.now(),
+                medicine: medicine,
+                dosage: dosage,
+                frequency: frequency,
+                duration: duration || 'As prescribed'
+            };
+            
+            prescriptionItems.push(prescriptionItem);
+            updatePrescriptionDisplay();
+            clearPrescriptionForm();
+            saveDraft();
+        }
+
+        function updatePrescriptionDisplay() {
+            const prescriptionList = document.getElementById('prescriptionList');
+            const prescriptionHidden = document.getElementById('prescriptionHidden');
+            
+            if (prescriptionItems.length === 0) {
+                prescriptionList.innerHTML = '<p class="text-muted">No medications added yet.</p>';
+                prescriptionHidden.value = '';
+                return;
+            }
+            
+            let html = '';
+            prescriptionItems.forEach((item, index) => {
+                html += `
+                    <div class="prescription-item mb-2" id="prescription-${item.id}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${item.medicine}</strong>
+                                <div class="text-muted small">
+                                    ${item.dosage} • ${item.frequency} • ${item.duration}
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePrescription(${item.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>`;
+            });
+            
+            prescriptionList.innerHTML = html;
+            
+            // Update hidden field with JSON data
+            prescriptionHidden.value = JSON.stringify(prescriptionItems);
+        }
+
+        function removePrescription(id) {
+            prescriptionItems = prescriptionItems.filter(item => item.id !== id);
+            updatePrescriptionDisplay();
+            saveDraft();
+        }
+
+        function clearPrescriptionForm() {
+            document.getElementById('medicineSelect').value = '';
+            document.getElementById('dosageSelect').value = '';
+            document.getElementById('frequencySelect').value = '';
+            document.getElementById('durationSelect').value = '';
+        }
+
+        // Lab Test management
+        function addLabTest() {
+            const test = document.getElementById('testSelect').value;
+            const notes = document.getElementById('testNotes').value.trim();
+            
+            if (!test) {
+                alert('Please select a lab test.');
+                return;
+            }
+            
+            const testOption = document.querySelector(`#testSelect option[value="${test}"]`);
+            const testName = testOption ? testOption.text : test;
+            
+            const labTestItem = {
+                id: Date.now(),
+                test: test,
+                testName: testName,
+                notes: notes
+            };
+            
+            labTestItems.push(labTestItem);
+            updateLabTestDisplay();
+            clearLabTestForm();
+            saveDraft();
+        }
+
+        function updateLabTestDisplay() {
+            const labTestList = document.getElementById('labTestList');
+            const labTestsHidden = document.getElementById('labTestsHidden');
+            
+            if (labTestItems.length === 0) {
+                labTestList.innerHTML = '<p class="text-muted">No lab tests added yet.</p>';
+                labTestsHidden.value = '';
+                return;
+            }
+            
+            let html = '';
+            labTestItems.forEach((item, index) => {
+                html += `
+                    <div class="labtest-item mb-2" id="labtest-${item.id}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${item.testName}</strong>
+                                ${item.notes ? `<div class="text-muted small">${item.notes}</div>` : ''}
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLabTest(${item.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>`;
+            });
+            
+            labTestList.innerHTML = html;
+            
+            // Update hidden field with JSON data
+            labTestsHidden.value = JSON.stringify(labTestItems);
+        }
+
+        function removeLabTest(id) {
+            labTestItems = labTestItems.filter(item => item.id !== id);
+            updateLabTestDisplay();
+            saveDraft();
+        }
+
+        function clearLabTestForm() {
+            document.getElementById('testSelect').value = '';
+            document.getElementById('testNotes').value = '';
+        }
+
+        // Save draft functionality
+        function saveDraft() {
+            const draft = {
+                title: document.getElementById('Title').value,
+                noteType: document.getElementById('NoteType').value,
+                priority: document.getElementById('Priority').value,
+                notes: document.getElementById('Notes').value,
+                diagnosis: document.getElementById('Diagnosis').value,
+                followUpInstructions: document.getElementById('FollowUpInstructions').value,
+                nextAppointmentDate: document.getElementById('NextAppointmentDate').value,
+                prescriptionItems: prescriptionItems,
+                labTestItems: labTestItems,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('medicalNoteDraft_' + @ViewBag.PatientId, JSON.stringify(draft));
+        }
+
+        function loadDraft() {
+            const draft = localStorage.getItem('medicalNoteDraft_' + @ViewBag.PatientId);
+            if (draft) {
+                try {
+                    const draftData = JSON.parse(draft);
+                    
+                    // Basic fields
+                    if (draftData.title) document.getElementById('Title').value = draftData.title;
+                    if (draftData.noteType) document.getElementById('NoteType').value = draftData.noteType;
+                    if (draftData.priority) document.getElementById('Priority').value = draftData.priority;
+                    if (draftData.notes) document.getElementById('Notes').value = draftData.notes;
+                    if (draftData.diagnosis) document.getElementById('Diagnosis').value = draftData.diagnosis;
+                    if (draftData.followUpInstructions) document.getElementById('FollowUpInstructions').value = draftData.followUpInstructions;
+                    if (draftData.nextAppointmentDate) document.getElementById('NextAppointmentDate').value = draftData.nextAppointmentDate;
+                    
+                    // Prescription items
+                    if (draftData.prescriptionItems && draftData.prescriptionItems.length > 0) {
+                        prescriptionItems = draftData.prescriptionItems;
+                        updatePrescriptionDisplay();
+                    }
+                    
+                    // Lab test items
+                    if (draftData.labTestItems && draftData.labTestItems.length > 0) {
+                        labTestItems = draftData.labTestItems;
+                        updateLabTestDisplay();
+                    }
+                    
+                    // Show a message that draft was loaded
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-info alert-dismissible fade show mt-3';
+                    alertDiv.innerHTML = `
+                        <i class="fas fa-info-circle me-2"></i>Loaded draft from ${new Date(draftData.timestamp).toLocaleString()}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('.container-fluid').prepend(alertDiv);
+                    
+                } catch (e) {
+                    console.error('Error loading draft:', e);
+                }
+            }
+        }
+
+        // Clear draft when form is submitted
+        document.getElementById('medicalNoteForm').addEventListener('submit', function() {
+            localStorage.removeItem('medicalNoteDraft_' + @ViewBag.PatientId);
+        });
+    </script>
+}

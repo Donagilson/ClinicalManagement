@@ -1,0 +1,494 @@
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IEnumerable<ClinicalManagementSystem2025.Models.Appointment>
+
+@using ClinicalManagementSystem2025.Models
+
+@functions {
+    private string GetTimeSlotClass(DateTime appointmentDateTime)
+    {
+        if (appointmentDateTime < DateTime.Now)
+        {
+            return "past-appointment-time";
+        }
+        else if (appointmentDateTime <= DateTime.Now.AddMinutes(30) && appointmentDateTime >= DateTime.Now)
+        {
+            return "current-appointment-time";
+        }
+        else
+        {
+            return "future-appointment-time";
+        }
+    }
+
+    private string GetTimeSlotTextClass(DateTime appointmentDateTime)
+    {
+        if (appointmentDateTime < DateTime.Now)
+        {
+            return "text-danger"; // Red text for past appointments
+        }
+        else if (appointmentDateTime <= DateTime.Now.AddMinutes(30) && appointmentDateTime >= DateTime.Now)
+        {
+            return "text-warning"; // Orange text for current appointments
+        }
+        else
+        {
+            return "text-success"; // Green text for future appointments
+        }
+    }
+}
+
+<div class="container-fluid">
+    <!-- Doctor Information Card -->
+    @if (ViewBag.DoctorInfo != null)
+    {
+        var doctor = ViewBag.DoctorInfo as ClinicalManagementSystem2025.Models.Doctor;
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm border-purple">
+                    <div class="card-header bg-purple text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-id-card me-2"></i>Your Profile
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Name:</strong> @(doctor?.DoctorName ?? "N/A")
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Specialization:</strong> @(doctor?.Specialization ?? "N/A")
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Qualification:</strong> @(doctor?.Qualification ?? "N/A")
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Experience:</strong> @(doctor?.Experience ?? 0) years
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <strong>Available:</strong> @(doctor?.AvailableFrom?.ToString(@"hh\:mm") ?? "N/A") - @(doctor?.AvailableTo?.ToString(@"hh\:mm") ?? "N/A")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <a href="@Url.Action("LabReports", "Doctor")" class="btn btn-outline-success btn-lg w-100 d-flex flex-column align-items-center justify-content-center py-4">
+                                <i class="fas fa-file-medical fa-2x mb-2"></i>
+                                <span>Lab Reports</span>
+                                <small class="text-muted">View completed tests</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-purple">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.TodaysAppointments != null ? (ViewBag.TodaysAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Count() : 0)</h4>
+                            <p class="card-text">Today's Appointments</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.TomorrowsAppointments != null ? (ViewBag.TomorrowsAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Count() : 0)</h4>
+                            <p class="card-text">Tomorrow's Appointments</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-plus fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-purple-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.TodaysAppointments != null ? (ViewBag.TodaysAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Count(a => a.Status == "InProgress") : 0)</h4>
+                            <p class="card-text">Currently Seeing</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-purple-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.TodaysAppointments != null ? (ViewBag.TodaysAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Count(a => a.Status == "Visited" || a.Status == "Completed") : 0)</h4>
+                            <p class="card-text">Completed Today</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Appointments -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-day me-2"></i>Today's Appointments
+                    </h5>
+                    <div>
+                        <a asp-action="TodaysAppointments" class="btn btn-light btn-sm">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.TodaysAppointments != null && (ViewBag.TodaysAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient Name</th>
+                                        <th>Phone</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Duration</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in (ViewBag.TodaysAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Take(5))
+                                    {
+                                        <tr class="@((appointment.Status == "Completed" || appointment.Status == "Visited") ? "table-success" : appointment.Status == "Cancelled" ? "table-danger" : appointment.Status == "InProgress" ? "table-primary" : "")">
+                                            <td>
+                                                <div class="@GetTimeSlotClass(appointment.AppointmentDateTime)">
+                                                    <div class="fw-bold">@appointment.AppointmentTime.ToString(@"hh\:mm")</div>
+                                                    <small class="@GetTimeSlotTextClass(appointment.AppointmentDateTime)">
+                                                        @appointment.AppointmentTime.Add(TimeSpan.FromMinutes(appointment.DurationMinutes)).ToString(@"hh\:mm")
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>@appointment.PatientName</td>
+                                            <td>@appointment.PatientPhone</td>
+                                            <td>@appointment.Reason</td>
+                                            <td>
+                                                @if (appointment.Status == "Scheduled")
+                                                {
+                                                    <span class="badge bg-warning">Scheduled</span>
+                                                }
+                                                else if (appointment.Status == "Confirmed")
+                                                {
+                                                    <span class="badge bg-info">Confirmed</span>
+                                                }
+                                                else if (appointment.Status == "InProgress")
+                                                {
+                                                    <span class="badge bg-primary">In Progress</span>
+                                                }
+                                                else if (appointment.Status == "Visited")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-stethoscope me-1"></i>Visited
+                                                    </span>
+                                                }
+                                                else if (appointment.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else if (appointment.Status == "Cancelled")
+                                                {
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@appointment.Status</span>
+                                                }
+                                            </td>
+                                            <td>@appointment.DurationMinutes min</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="PatientDetails" asp-route-patientId="@appointment.PatientId"
+                                                       class="btn btn-purple btn-sm">
+                                                        <i class="fas fa-eye me-1"></i>View Details
+                                                    </a>
+                                                    <a asp-action="AddMedicalNote"
+                                                       asp-route-patientId="@appointment.PatientId"
+                                                       asp-route-appointmentId="@appointment.AppointmentId"
+                                                       class="btn btn-outline-purple btn-sm">
+                                                        <i class="fas fa-notes-medical me-1"></i>Add Note
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No appointments scheduled for today</h5>
+                            <p class="text-muted">You have a free day! Enjoy your time.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tomorrow's Appointments -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-info">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-plus me-2"></i>Tomorrow's Appointments
+                    </h5>
+                    <div>
+                        <small class="text-light">@DateTime.Today.AddDays(1).ToString("dddd, MMMM dd, yyyy")</small>
+                        @if (ViewBag.TomorrowsAppointments != null && (ViewBag.TomorrowsAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Any())
+                        {
+                            <a asp-action="AppointmentsByDate" asp-route-date="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn btn-light btn-sm ms-2">
+                                <i class="fas fa-eye me-1"></i>View All
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.TomorrowsAppointments != null && (ViewBag.TomorrowsAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient Name</th>
+                                        <th>Phone</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Duration</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in (ViewBag.TomorrowsAppointments as System.Collections.Generic.IEnumerable<ClinicalManagementSystem2025.Models.Appointment>).Take(5))
+                                    {
+                                        <tr class="@((appointment.Status == "Completed" || appointment.Status == "Visited") ? "table-success" : appointment.Status == "Cancelled" ? "table-danger" : appointment.Status == "InProgress" ? "table-primary" : "")">
+                                            <td>
+                                                <div class="@GetTimeSlotClass(appointment.AppointmentDateTime)">
+                                                    <div class="fw-bold">@appointment.AppointmentTime.ToString(@"hh\:mm")</div>
+                                                    <small class="@GetTimeSlotTextClass(appointment.AppointmentDateTime)">
+                                                        @appointment.AppointmentTime.Add(TimeSpan.FromMinutes(appointment.DurationMinutes)).ToString(@"hh\:mm")
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>@appointment.PatientName</td>
+                                            <td>@appointment.PatientPhone</td>
+                                            <td>@appointment.Reason</td>
+                                            <td>
+                                                @if (appointment.Status == "Scheduled")
+                                                {
+                                                    <span class="badge bg-warning">Scheduled</span>
+                                                }
+                                                else if (appointment.Status == "Confirmed")
+                                                {
+                                                    <span class="badge bg-info">Confirmed</span>
+                                                }
+                                                else if (appointment.Status == "InProgress")
+                                                {
+                                                    <span class="badge bg-primary">In Progress</span>
+                                                }
+                                                else if (appointment.Status == "Visited")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-stethoscope me-1"></i>Visited
+                                                    </span>
+                                                }
+                                                else if (appointment.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else if (appointment.Status == "Cancelled")
+                                                {
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@appointment.Status</span>
+                                                }
+                                            </td>
+                                            <td>@appointment.DurationMinutes min</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="PatientDetails" asp-route-patientId="@appointment.PatientId"
+                                                       class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye me-1"></i>View Details
+                                                    </a>
+                                                    <a asp-action="AddMedicalNote"
+                                                       asp-route-patientId="@appointment.PatientId"
+                                                       asp-route-appointmentId="@appointment.AppointmentId"
+                                                       class="btn btn-outline-info btn-sm">
+                                                        <i class="fas fa-notes-medical me-1"></i>Add Note
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No appointments scheduled for tomorrow</h5>
+                            <p class="text-muted">Great! You'll have a lighter schedule tomorrow.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.bg-purple-light {
+    background-color: #9a8df0 !important;
+}
+
+.bg-purple-dark {
+    background-color: #6a5acd !important;
+}
+
+.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.border-info {
+    border-color: #0dcaf0 !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #0a97b0;
+    border-color: #0a97b0;
+    color: white;
+}
+
+.btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.past-appointment-time {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #dc3545;
+}
+
+.current-appointment-time {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #ffc107;
+}
+
+.table-primary {
+    --bs-table-bg: #cce7ff;
+    --bs-table-color: #0c5460;
+}
+
+.table-success {
+    --bs-table-bg: #d4edda;
+    --bs-table-color: #155724;
+}
+
+.table-danger {
+    --bs-table-bg: #f8d7da;
+    --bs-table-color: #721c24;
+}
+</style>

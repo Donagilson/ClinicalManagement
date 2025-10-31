@@ -1,0 +1,261 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.LabTestPrescription>
+
+@{
+    ViewData["Title"] = "My Lab Test Prescriptions";
+    var doctorInfo = ViewBag.DoctorInfo as ClinicalManagementSystem2025.Models.Doctor;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>My Lab Test Prescriptions</h2>
+                    <p class="text-muted mb-0">Lab tests prescribed by Dr. @doctorInfo?.FullName</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("LabTests", "Doctor")" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-plus me-1"></i>Prescribe New Test
+                    </a>
+                    <a href="@Url.Action("Index", "Doctor")" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (Model.Any())
+            {
+                <!-- Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                                <h4>@Model.Count()</h4>
+                                <p class="mb-0">Total Prescriptions</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-dark">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <h4>@Model.Count(p => p.Status == "Prescribed")</h4>
+                                <p class="mb-0">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-cog fa-2x mb-2"></i>
+                                <h4>@Model.Count(p => p.Status == "InProgress")</h4>
+                                <p class="mb-0">In Progress</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                <h4>@Model.Count(p => p.Status == "Completed")</h4>
+                                <p class="mb-0">Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Prescription Code</th>
+                                        <th>Patient</th>
+                                        <th>Test</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Prescription Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var prescription in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-primary">@prescription.PrescriptionCode</span>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>@prescription.PatientName</strong>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>@prescription.TestName</strong><br>
+                                                    <small class="text-muted">@prescription.TestCode</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (prescription.IsUrgent)
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>Urgent
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-clock me-1"></i>Normal
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (prescription.Status == "Prescribed")
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-clipboard-list me-1"></i>Prescribed
+                                                    </span>
+                                                }
+                                                else if (prescription.Status == "Assigned")
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-user-check me-1"></i>Assigned
+                                                    </span>
+                                                }
+                                                else if (prescription.Status == "InProgress")
+                                                {
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-cog fa-spin me-1"></i>In Progress
+                                                    </span>
+                                                }
+                                                else if (prescription.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle me-1"></i>Completed
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-question me-1"></i>@prescription.Status
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>@prescription.PrescriptionDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <a href="@Url.Action("LabTestPrescriptionDetails", "Doctor", new { id = prescription.LabTestPrescriptionId })" class="btn btn-sm btn-outline-info" title="View Details">
+                                                    <i class="fas fa-eye me-1"></i>Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Lab Test Prescriptions</h5>
+                        <p class="text-muted mb-0">You haven't prescribed any lab tests yet.</p>
+                        <div class="mt-3">
+                            <a href="@Url.Action("LabTests", "Doctor")" class="btn btn-primary me-2">
+                                <i class="fas fa-plus me-1"></i>Prescribe Lab Test
+                            </a>
+                            <a href="@Url.Action("Index", "Doctor")" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
+}
+
+.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.text-dark {
+    color: #212529 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.fa-spin {
+    animation: fa-spin 1s infinite linear;
+}
+
+
+</style>

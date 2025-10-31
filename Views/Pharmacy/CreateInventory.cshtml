@@ -1,0 +1,277 @@
+@model ClinicalManagementSystem2025.Models.PharmacyInventory
+
+@{
+    ViewData["Title"] = "Create Inventory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-plus me-2"></i>Create Inventory
+                    </h2>
+                    <p class="text-muted mb-0">Set up inventory for @ViewBag.Medicine.MedicineName</p>
+                </div>
+                <div>
+                    <a asp-controller="Pharmacy" asp-action="Details" asp-route-id="@ViewBag.Medicine.MedicineId" class="btn btn-outline-info me-2">
+                        <i class="fas fa-eye me-1"></i>View Medicine
+                    </a>
+                    <a asp-action="Inventory" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Inventory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info border-info">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div>
+                        <strong>Medicine:</strong> @ViewBag.Medicine.MedicineName (@ViewBag.Medicine.MedicineCode)
+                        <br>
+                        <small class="text-muted">Unit Price: ₹@ViewBag.Medicine.UnitPrice.ToString("F2") | Category: @(ViewBag.Medicine.Category ?? "General")</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-boxes me-2"></i>Inventory Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateInventory" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="MedicineId" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="CurrentStock" class="form-label">Initial Stock Quantity *</label>
+                                <input asp-for="CurrentStock" class="form-control" type="number" min="0" required placeholder="Enter initial stock quantity" />
+                                <span asp-validation-for="CurrentStock" class="text-danger"></span>
+                                <small class="text-muted">Starting inventory level for this medicine</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="SellingPrice" class="form-label">Selling Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input asp-for="SellingPrice" class="form-control" type="number" step="0.01" min="0" required placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="SellingPrice" class="text-danger"></span>
+                                <small class="text-muted">Medicine base price: ₹@ViewBag.Medicine.UnitPrice.ToString("F2")</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="MinStockLevel" class="form-label">Minimum Stock Level *</label>
+                                <input asp-for="MinStockLevel" class="form-control" type="number" min="0" required placeholder="Enter minimum stock level" />
+                                <span asp-validation-for="MinStockLevel" class="text-danger"></span>
+                                <small class="text-muted">Receive alerts when stock falls below this level</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="MaxStockLevel" class="form-label">Maximum Stock Level *</label>
+                                <input asp-for="MaxStockLevel" class="form-control" type="number" min="0" required placeholder="Enter maximum stock level" />
+                                <span asp-validation-for="MaxStockLevel" class="text-danger"></span>
+                                <small class="text-muted">Recommended maximum capacity for this item</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="CostPrice" class="form-label">Cost Price *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input asp-for="CostPrice" class="form-control" type="number" step="0.01" min="0" required placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="CostPrice" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="BatchNumber" class="form-label">Batch Number</label>
+                                <input asp-for="BatchNumber" class="form-control" placeholder="Enter batch number" />
+                                <span asp-validation-for="BatchNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label asp-for="Supplier" class="form-label">Supplier</label>
+                                <input asp-for="Supplier" class="form-control" placeholder="Enter supplier name" />
+                                <span asp-validation-for="Supplier" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                                <input asp-for="ExpiryDate" class="form-control" type="date" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                                <small class="text-muted">Leave empty if no expiry date</small>
+                            </div>
+                        </div>
+
+                        <!-- Success/Error Messages -->
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-success alert-dismissible fade show border-success">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        <strong>Success!</strong> @TempData["SuccessMessage"]
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="alert alert-danger alert-dismissible fade show border-danger">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Error!</strong> @TempData["ErrorMessage"]
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" onclick="history.back()">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </button>
+                            <button type="submit" class="btn btn-purple">
+                                <i class="fas fa-save me-1"></i>Create Inventory
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    border-color: #7b68ee;
+    box-shadow: 0 0 0 0.2rem rgba(123, 104, 238, 0.25);
+}
+
+.alert {
+    border-radius: 8px;
+}
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const minStockInput = document.getElementById('MinStockLevel');
+            const maxStockInput = document.getElementById('MaxStockLevel');
+            const currentStockInput = document.getElementById('CurrentStock');
+            const sellingPriceInput = document.getElementById('SellingPrice');
+            const costPriceInput = document.getElementById('CostPrice');
+
+            function validateStockLevels() {
+                if (minStockInput && maxStockInput && currentStockInput) {
+                    const minStock = parseInt(minStockInput.value) || 0;
+                    const maxStock = parseInt(maxStockInput.value) || 0;
+                    const currentStock = parseInt(currentStockInput.value) || 0;
+
+                    if (minStock > maxStock) {
+                        minStockInput.setCustomValidity('Minimum stock cannot be greater than maximum stock');
+                        maxStockInput.setCustomValidity('Maximum stock cannot be less than minimum stock');
+                    } else if (currentStock < minStock) {
+                        currentStockInput.setCustomValidity('Current stock cannot be less than minimum stock level');
+                    } else {
+                        minStockInput.setCustomValidity('');
+                        maxStockInput.setCustomValidity('');
+                        currentStockInput.setCustomValidity('');
+                    }
+                }
+            }
+
+            function validatePrices() {
+                if (sellingPriceInput && costPriceInput) {
+                    const sellingPrice = parseFloat(sellingPriceInput.value) || 0;
+                    const costPrice = parseFloat(costPriceInput.value) || 0;
+
+                    if (sellingPrice > 0 && costPrice > 0 && sellingPrice < costPrice) {
+                        sellingPriceInput.setCustomValidity('Selling price cannot be less than cost price');
+                        costPriceInput.setCustomValidity('Cost price cannot be greater than selling price');
+                    } else {
+                        sellingPriceInput.setCustomValidity('');
+                        costPriceInput.setCustomValidity('');
+                    }
+                }
+            }
+
+            if (minStockInput) minStockInput.addEventListener('input', validateStockLevels);
+            if (maxStockInput) maxStockInput.addEventListener('input', validateStockLevels);
+            if (currentStockInput) currentStockInput.addEventListener('input', validateStockLevels);
+            if (sellingPriceInput) sellingPriceInput.addEventListener('input', validatePrices);
+            if (costPriceInput) costPriceInput.addEventListener('input', validatePrices);
+
+            // Set default values based on medicine
+            if (sellingPriceInput && !sellingPriceInput.value) {
+                const medicinePrice = @ViewBag.Medicine.UnitPrice.ToString("F2").Replace(",", ".");
+                sellingPriceInput.value = medicinePrice;
+            }
+        });
+    </script>
+}

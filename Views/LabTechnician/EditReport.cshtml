@@ -1,0 +1,67 @@
+@model ClinicalManagementSystem2025.Models.LabReport
+
+@{
+    ViewData["Title"] = "Edit Lab Report";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Edit Lab Report</h2>
+            <form asp-action="UpdateReport" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="LabReportId" />
+                <input type="hidden" asp-for="ReportCode" />
+                <input type="hidden" asp-for="PatientId" />
+                <input type="hidden" asp-for="LabTestId" />
+                <input type="hidden" asp-for="DoctorId" />
+                <input type="hidden" asp-for="LabTechnicianId" />
+                <input type="hidden" asp-for="CollectionDate" />
+                <input type="hidden" asp-for="CreatedDate" />
+
+                <div class="form-group">
+                    <label asp-for="ReportDate" class="control-label"></label>
+                    <input asp-for="ReportDate" class="form-control" type="date" />
+                    <span asp-validation-for="ReportDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ResultValue" class="control-label"></label>
+                    <input asp-for="ResultValue" class="form-control" />
+                    <span asp-validation-for="ResultValue" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ResultUnit" class="control-label"></label>
+                    <input asp-for="ResultUnit" class="form-control" />
+                    <span asp-validation-for="ResultUnit" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Findings" class="control-label"></label>
+                    <textarea asp-for="Findings" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Findings" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label"></label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Notes" class="control-label"></label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a href="@Url.Action("Reports")" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

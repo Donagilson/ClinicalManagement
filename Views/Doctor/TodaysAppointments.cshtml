@@ -1,0 +1,430 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.Appointment>
+
+@using ClinicalManagementSystem2025.Models
+
+@functions {
+    private string GetTimeSlotClass(DateTime appointmentDateTime)
+    {
+        if (appointmentDateTime < DateTime.Now)
+        {
+            return "past-appointment-time";
+        }
+        else if (appointmentDateTime <= DateTime.Now.AddMinutes(30) && appointmentDateTime >= DateTime.Now)
+        {
+            return "current-appointment-time";
+        }
+        else
+        {
+            return "future-appointment-time";
+        }
+    }
+
+    private string GetTimeSlotTextClass(DateTime appointmentDateTime)
+    {
+        if (appointmentDateTime < DateTime.Now)
+        {
+            return "text-danger"; // Red text for past appointments
+        }
+        else if (appointmentDateTime <= DateTime.Now.AddMinutes(30) && appointmentDateTime >= DateTime.Now)
+        {
+            return "text-warning"; // Orange text for current appointments
+        }
+        else
+        {
+            return "text-success"; // Green text for future appointments
+        }
+    }
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-calendar-day me-2"></i>Today's Appointments
+                    </h2>
+                    <p class="text-muted mb-0">@ViewBag.TodayDate</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-purple me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                    <a asp-action="AppointmentsByDate" asp-route-date="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn btn-info me-2">
+                        <i class="fas fa-calendar-plus me-1"></i>Tomorrow's Appointments
+                    </a>
+                    <div class="btn-group" role="group">
+                        <a asp-action="AppointmentsByDate" asp-route-date="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chevron-left me-1"></i>Yesterday
+                        </a>
+                        <a asp-action="AppointmentsByDate" asp-route-date="@DateTime.Today.ToString("yyyy-MM-dd")" class="btn btn-purple btn-sm">
+                            <i class="fas fa-calendar-day me-1"></i>Today
+                        </a>
+                        <a asp-action="AppointmentsByDate" asp-route-date="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" class="btn btn-info btn-sm">
+                            <i class="fas fa-calendar-plus me-1"></i>Tomorrow
+                        </a>
+                        <a asp-action="AppointmentsByDate" asp-route-date="@DateTime.Today.AddDays(2).ToString("yyyy-MM-dd")" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-chevron-right me-1"></i>Day After
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Info -->
+    @if (ViewBag.DoctorInfo != null)
+    {
+        var doctor = ViewBag.DoctorInfo as ClinicalManagementSystem2025.Models.Doctor;
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info border-purple">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-user-md me-2"></i>Dr. @(doctor?.DoctorName ?? "N/A")</strong><br>
+                            <small>@doctor?.Specialization | @doctor?.Department?.DepartmentName</small>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <strong>Available:</strong> @(doctor?.AvailableFrom?.ToString(@"hh\:mm") ?? "N/A") - @(doctor?.AvailableTo?.ToString(@"hh\:mm") ?? "N/A")<br>
+                            <small>Consultation Fee: ₹@doctor?.ConsultationFee</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Appointments List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-list me-2"></i>Appointment Schedule
+                            </h5>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-light text-dark">
+                                Total: @Model.Count() appointments
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Time</th>
+                                        <th>Patient Details</th>
+                                        <th>MMR No</th>
+                                        <th>Contact</th>
+                                        <th>Reason for Visit</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                        <th>Notes</th>
+                                        <th class="pe-3">Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.OrderBy(a => a.AppointmentTime))
+                                    {
+                                        <tr class="@((appointment.Status == "Completed" || appointment.Status == "Visited") ? "table-success" : appointment.Status == "Cancelled" ? "table-danger" : "")">
+                                            <td class="ps-3">
+                                                <div class="@(GetTimeSlotClass(appointment.AppointmentDateTime))">
+                                                    <div class="fw-bold">@appointment.AppointmentTime.ToString(@"hh\:mm tt")</div>
+                                                    <small class="@GetTimeSlotTextClass(appointment.AppointmentDateTime)">
+                                                        @appointment.AppointmentTime.Add(TimeSpan.FromMinutes(appointment.DurationMinutes)).ToString(@"hh\:mm tt")
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">@appointment.PatientName</div>
+                                                @if (appointment.Patient != null)
+                                                {
+                                                    <small class="text-muted">
+                                                        Age: @(DateTime.Today.Year - appointment.Patient.DateOfBirth.Year) |
+                                                        @appointment.Patient.Gender
+                                                    </small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (appointment.Patient != null)
+                                                {
+                                                    <span class="badge bg-purple">@appointment.Patient.MmrId</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-purple">CS@(appointment.PatientId.ToString("00"))</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <i class="fas fa-phone me-1"></i>@appointment.PatientPhone
+                                                </div>
+                                                @if (appointment.Patient?.Email != null)
+                                                {
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-envelope me-1"></i>@appointment.Patient.Email
+                                                    </small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>@appointment.Reason</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">@appointment.DurationMinutes min</span>
+                                            </td>
+                                            <td>
+                                                @if (appointment.Status == "Scheduled")
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-clock me-1"></i>@appointment.Status
+                                                    </span>
+                                                }
+                                                else if (appointment.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>@appointment.Status
+                                                    </span>
+                                                }
+                                                else if (appointment.Status == "Visited")
+                                                {
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-stethoscope me-1"></i>@appointment.Status
+                                                    </span>
+                                                }
+                                                else if (appointment.Status == "Cancelled")
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-times me-1"></i>@appointment.Status
+                                                    </span>
+                                                }
+                                                else if (appointment.Status == "In Progress")
+                                                {
+                                                    <span class="badge bg-primary">
+                                                        <i class="fas fa-play me-1"></i>@appointment.Status
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@appointment.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(appointment.Notes))
+                                                {
+                                                    <span class="text-truncate d-inline-block" style="max-width: 150px;" title="@appointment.Notes">
+                                                        @appointment.Notes
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <small class="text-muted">No notes</small>
+                                                }
+                                            </td>
+                                            <td class="pe-3">
+                                                <code class="text-muted">@appointment.AppointmentCode</code>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Appointments Today</h4>
+                            <p class="text-muted">You have no scheduled appointments for today. Enjoy your free time!</p>
+                            <a asp-action="Index" class="btn btn-purple">
+                                <i class="fas fa-home me-1"></i>Return to Dashboard
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card text-center border-primary">
+                    <div class="card-body">
+                        <h5 class="text-primary">@Model.Count()</h5>
+                        <small class="text-muted">Total Appointments</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-success">
+                    <div class="card-body">
+                        <h5 class="text-success">@Model.Count(a => a.Status == "Completed" || a.Status == "Visited")</h5>
+                        <small class="text-muted">Visited/Completed</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-warning">
+                    <div class="card-body">
+                        <h5 class="text-warning">@Model.Count(a => a.Status == "Scheduled")</h5>
+                        <small class="text-muted">Scheduled</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-danger">
+                    <div class="card-body">
+                        <h5 class="text-danger">@Model.Count(a => a.Status == "Cancelled")</h5>
+                        <small class="text-muted">Cancelled</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #0a97b0;
+    border-color: #0a97b0;
+    color: white;
+}
+
+.btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.past-appointment-time {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #dc3545;
+}
+
+.current-appointment-time {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #ffc107;
+}
+
+.future-appointment-time {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #17a2b8;
+}
+
+.table-success {
+    --bs-table-bg: #d4edda;
+    --bs-table-color: #155724;
+}
+
+.table-danger {
+    --bs-table-bg: #f8d7da;
+    --bs-table-color: #721c24;
+}
+
+.visited-appointment-row {
+    background-color: #d1ecf1;
+}
+
+.time-conflict-indicator {
+    position: relative;
+}
+
+.time-conflict-indicator::after {
+    content: "⚠";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ffc107;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #212529;
+}
+</style>

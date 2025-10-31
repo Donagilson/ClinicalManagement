@@ -1,0 +1,491 @@
+@model ClinicalManagementSystem2025.Models.Doctor
+@{
+    ViewData["Title"] = "Add Doctor";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-olive">
+            <i class="fas fa-user-md me-2"></i>Add New Doctor
+        </h1>
+        <div>
+            <a asp-action="ManageDoctors" class="btn btn-outline-olive me-2">
+                <i class="fas fa-list me-1"></i>View All Doctors
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Success / Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Validation Summary -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h5>Please fix the following errors:</h5>
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Doctor Form -->
+    <div class="card shadow-sm border-olive">
+        <div class="card-header bg-olive text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-file-medical me-2"></i>Doctor Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddDoctor" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+
+                <!-- Doctor Name -->
+                <div class="col-md-6">
+                    <label asp-for="DoctorName" class="form-label fw-bold">Doctor Name *</label>
+                    <input asp-for="DoctorName" class="form-control" placeholder="Enter doctor's full name" required />
+                    <span asp-validation-for="DoctorName" class="text-danger small"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Email</label>
+                    <input type="email" name="Email" class="form-control" placeholder="Enter email address" />
+                    <small class="text-muted">Optional - for login and communication</small>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Phone</label>
+                    <input type="tel" name="Phone" class="form-control" placeholder="Enter phone number" />
+                    <small class="text-muted">Optional - for contact purposes</small>
+                </div>
+
+                <!-- Username -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Username *</label>
+                    <input type="text" name="Username" class="form-control" placeholder="Enter username for login" required />
+                    <small class="text-muted">Required - for doctor login access</small>
+                </div>
+
+                <!-- Password -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Password *</label>
+                    <input type="password" name="Password" class="form-control" placeholder="Enter password for login" required />
+                    <small class="text-muted">Required - minimum 6 characters</small>
+                </div>
+
+                <!-- Department Selection -->
+                <div class="col-md-6">
+                    <label asp-for="DepartmentId" class="form-label fw-bold">Department *</label>
+                    <select asp-for="DepartmentId" class="form-select" id="DepartmentId" required>
+                        <option value="">-- Select Department --</option>
+                        @foreach (var dept in ViewBag.Departments as IEnumerable<ClinicalManagementSystem2025.Models.Department>)
+                        {
+                            <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                </div>
+
+                <!-- Specialization Selection -->
+                <div class="col-md-6">
+                    <label asp-for="Specialization" class="form-label fw-bold">Specialization</label>
+                    <select asp-for="Specialization" class="form-select" id="specializationDropdown">
+                        <option value="">-- Select Specialization --</option>
+                        <!-- General Medicine -->
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Internal Medicine">Internal Medicine</option>
+                        <option value="Family Medicine">Family Medicine</option>
+                        
+                        <!-- Cardiology -->
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Interventional Cardiology">Interventional Cardiology</option>
+                        <option value="Pediatric Cardiology">Pediatric Cardiology</option>
+                        
+                        <!-- Orthopedics -->
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Orthopedic Surgery">Orthopedic Surgery</option>
+                        <option value="Sports Medicine">Sports Medicine</option>
+                        <option value="Joint Replacement">Joint Replacement</option>
+                        
+                        <!-- Neurology -->
+                        <option value="Neurology">Neurology</option>
+                        <option value="Neurosurgery">Neurosurgery</option>
+                        <option value="Pediatric Neurology">Pediatric Neurology</option>
+                        
+                        <!-- Pediatrics -->
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Neonatology">Neonatology</option>
+                        <option value="Pediatric Surgery">Pediatric Surgery</option>
+                        
+                        <!-- Gynecology & Obstetrics -->
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="Obstetrics">Obstetrics</option>
+                        <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                        <option value="Reproductive Medicine">Reproductive Medicine</option>
+                        
+                        <!-- Surgery -->
+                        <option value="General Surgery">General Surgery</option>
+                        <option value="Plastic Surgery">Plastic Surgery</option>
+                        <option value="Cardiac Surgery">Cardiac Surgery</option>
+                        <option value="Vascular Surgery">Vascular Surgery</option>
+                        
+                        <!-- Dermatology -->
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Cosmetic Dermatology">Cosmetic Dermatology</option>
+                        <option value="Pediatric Dermatology">Pediatric Dermatology</option>
+                        
+                        <!-- Psychiatry -->
+                        <option value="Psychiatry">Psychiatry</option>
+                        <option value="Child Psychiatry">Child Psychiatry</option>
+                        <option value="Addiction Medicine">Addiction Medicine</option>
+                        
+                        <!-- Radiology -->
+                        <option value="Radiology">Radiology</option>
+                        <option value="Interventional Radiology">Interventional Radiology</option>
+                        <option value="Nuclear Medicine">Nuclear Medicine</option>
+                        
+                        <!-- Pathology -->
+                        <option value="Pathology">Pathology</option>
+                        <option value="Clinical Pathology">Clinical Pathology</option>
+                        <option value="Forensic Medicine">Forensic Medicine</option>
+                        
+                        <!-- Anesthesiology -->
+                        <option value="Anesthesiology">Anesthesiology</option>
+                        <option value="Critical Care Medicine">Critical Care Medicine</option>
+                        <option value="Pain Management">Pain Management</option>
+                        
+                        <!-- Ophthalmology -->
+                        <option value="Ophthalmology">Ophthalmology</option>
+                        <option value="Retina Specialist">Retina Specialist</option>
+                        <option value="Pediatric Ophthalmology">Pediatric Ophthalmology</option>
+                        
+                        <!-- ENT -->
+                        <option value="ENT (Otolaryngology)">ENT (Otolaryngology)</option>
+                        <option value="Head & Neck Surgery">Head & Neck Surgery</option>
+                        <option value="Rhinology">Rhinology</option>
+                        
+                        <!-- Urology -->
+                        <option value="Urology">Urology</option>
+                        <option value="Pediatric Urology">Pediatric Urology</option>
+                        <option value="Uro-Oncology">Uro-Oncology</option>
+                        
+                        <!-- Oncology -->
+                        <option value="Medical Oncology">Medical Oncology</option>
+                        <option value="Surgical Oncology">Surgical Oncology</option>
+                        <option value="Radiation Oncology">Radiation Oncology</option>
+                        
+                        <!-- Gastroenterology -->
+                        <option value="Gastroenterology">Gastroenterology</option>
+                        <option value="Hepatology">Hepatology</option>
+                        <option value="Pediatric Gastroenterology">Pediatric Gastroenterology</option>
+                        
+                        <!-- Pulmonology -->
+                        <option value="Pulmonology">Pulmonology</option>
+                        <option value="Sleep Medicine">Sleep Medicine</option>
+                        <option value="Interventional Pulmonology">Interventional Pulmonology</option>
+                        
+                        <!-- Endocrinology -->
+                        <option value="Endocrinology">Endocrinology</option>
+                        <option value="Diabetes & Metabolism">Diabetes & Metabolism</option>
+                        <option value="Pediatric Endocrinology">Pediatric Endocrinology</option>
+                        
+                        <!-- Nephrology -->
+                        <option value="Nephrology">Nephrology</option>
+                        <option value="Pediatric Nephrology">Pediatric Nephrology</option>
+                        <option value="Transplant Medicine">Transplant Medicine</option>
+                        
+                        <!-- Rheumatology -->
+                        <option value="Rheumatology">Rheumatology</option>
+                        <option value="Pediatric Rheumatology">Pediatric Rheumatology</option>
+                        
+                        <!-- Dentistry -->
+                        <option value="General Dentistry">General Dentistry</option>
+                        <option value="Oral Surgery">Oral Surgery</option>
+                        <option value="Orthodontics">Orthodontics</option>
+                        <option value="Periodontics">Periodontics</option>
+                        <option value="Endodontics">Endodontics</option>
+                        <option value="Prosthodontics">Prosthodontics</option>
+                        <option value="Pediatric Dentistry">Pediatric Dentistry</option>
+                        
+                        <!-- Alternative Medicine -->
+                        <option value="Ayurveda">Ayurveda</option>
+                        <option value="Homeopathy">Homeopathy</option>
+                        <option value="Unani">Unani</option>
+                        <option value="Naturopathy">Naturopathy</option>
+                        
+                        <!-- Physiotherapy -->
+                        <option value="Physiotherapy">Physiotherapy</option>
+                        <option value="Sports Physiotherapy">Sports Physiotherapy</option>
+                        <option value="Neurological Physiotherapy">Neurological Physiotherapy</option>
+                        
+                        <!-- Other -->
+                        <option value="Emergency Medicine">Emergency Medicine</option>
+                        <option value="Occupational Medicine">Occupational Medicine</option>
+                        <option value="Preventive Medicine">Preventive Medicine</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    <small class="text-muted">Select from available medical specializations</small>
+                </div>
+
+                <!-- Qualification -->
+                <div class="col-md-6">
+                    <label asp-for="Qualification" class="form-label fw-bold">Qualification</label>
+                    <select asp-for="Qualification" class="form-select">
+                        <option value="">-- Select Qualification --</option>
+                        <option value="MBBS">MBBS</option>
+                        <option value="MD">MD</option>
+                        <option value="MS">MS</option>
+                        <option value="MBBS, MD">MBBS, MD</option>
+                        <option value="MBBS, MS">MBBS, MS</option>
+                        <option value="MBBS, DNB">MBBS, DNB</option>
+                        <option value="MBBS, DM">MBBS, DM</option>
+                        <option value="MBBS, MCh">MBBS, MCh</option>
+                        <option value="BDS">BDS</option>
+                        <option value="MDS">MDS</option>
+                        <option value="BAMS">BAMS</option>
+                        <option value="BHMS">BHMS</option>
+                        <option value="BUMS">BUMS</option>
+                        <option value="BPT">BPT</option>
+                        <option value="MPT">MPT</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Qualification" class="text-danger small"></span>
+                </div>
+
+                <!-- Experience -->
+                <div class="col-md-6">
+                    <label asp-for="Experience" class="form-label fw-bold">Experience (Years)</label>
+                    <select asp-for="Experience" class="form-select">
+                        <option value="">-- Select Experience --</option>
+                        <option value="0">Fresh Graduate (0 years)</option>
+                        <option value="1">1 year</option>
+                        <option value="2">2 years</option>
+                        <option value="3">3 years</option>
+                        <option value="4">4 years</option>
+                        <option value="5">5 years</option>
+                        <option value="6">6 years</option>
+                        <option value="7">7 years</option>
+                        <option value="8">8 years</option>
+                        <option value="9">9 years</option>
+                        <option value="10">10 years</option>
+                        <option value="15">15 years</option>
+                        <option value="20">20 years</option>
+                        <option value="25">25 years</option>
+                        <option value="30">30+ years</option>
+                    </select>
+                    <span asp-validation-for="Experience" class="text-danger small"></span>
+                </div>
+
+                <!-- Consultation Fee -->
+                <div class="col-md-6">
+                    <label asp-for="ConsultationFee" class="form-label fw-bold">Consultation Fee</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input asp-for="ConsultationFee" type="number" class="form-control" step="0.01" min="0" />
+                    </div>
+                    <span asp-validation-for="ConsultationFee" class="text-danger small"></span>
+                </div>
+
+                <!-- Availability From -->
+                <div class="col-md-6">
+                    <label asp-for="AvailableFrom" class="form-label fw-bold">Available From</label>
+                    <select asp-for="AvailableFrom" class="form-select" id="availableFromSelect">
+                        <option value="">-- Select Start Time --</option>
+                        <option value="06:00">06:00 AM</option>
+                        <option value="06:30">06:30 AM</option>
+                        <option value="07:00">07:00 AM</option>
+                        <option value="07:30">07:30 AM</option>
+                        <option value="08:00">08:00 AM</option>
+                        <option value="08:30">08:30 AM</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="09:30">09:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="13:30">01:30 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="14:30">02:30 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="15:30">03:30 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="16:30">04:30 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                        <option value="17:30">05:30 PM</option>
+                        <option value="18:00">06:00 PM</option>
+                        <option value="18:30">06:30 PM</option>
+                        <option value="19:00">07:00 PM</option>
+                        <option value="19:30">07:30 PM</option>
+                        <option value="20:00">08:00 PM</option>
+                    </select>
+                    <span asp-validation-for="AvailableFrom" class="text-danger small"></span>
+                </div>
+
+                <!-- Availability To -->
+                <div class="col-md-6">
+                    <label asp-for="AvailableTo" class="form-label fw-bold">Available To</label>
+                    <select asp-for="AvailableTo" class="form-select" id="availableToSelect">
+                        <option value="">-- Select End Time --</option>
+                        <option value="08:00">08:00 AM</option>
+                        <option value="08:30">08:30 AM</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="09:30">09:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="13:30">01:30 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="14:30">02:30 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="15:30">03:30 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="16:30">04:30 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                        <option value="17:30">05:30 PM</option>
+                        <option value="18:00">06:00 PM</option>
+                        <option value="18:30">06:30 PM</option>
+                        <option value="19:00">07:00 PM</option>
+                        <option value="19:30">07:30 PM</option>
+                        <option value="20:00">08:00 PM</option>
+                        <option value="20:30">08:30 PM</option>
+                        <option value="21:00">09:00 PM</option>
+                        <option value="21:30">09:30 PM</option>
+                        <option value="22:00">10:00 PM</option>
+                    </select>
+                    <span asp-validation-for="AvailableTo" class="text-danger small"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="submit" class="btn btn-olive">
+                            <i class="fas fa-save me-1"></i>Save Doctor
+                        </button>
+                        <a asp-action="ManageDoctors" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Auto-hide success/error messages
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+
+
+            // Form validation
+            $('form').on('submit', function(e) {
+                var doctorName = $('input[name="DoctorName"]').val();
+                var username = $('input[name="Username"]').val();
+                var password = $('input[name="Password"]').val();
+                var departmentId = $('#DepartmentId').val();
+
+                if (!doctorName || doctorName.trim() === '') {
+                    e.preventDefault();
+                    alert('Please enter the doctor name.');
+                    return false;
+                }
+
+                if (!username || username.trim() === '') {
+                    e.preventDefault();
+                    alert('Please enter a username.');
+                    return false;
+                }
+
+                if (!password || password.trim() === '') {
+                    e.preventDefault();
+                    alert('Please enter a password.');
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert('Password must be at least 6 characters long.');
+                    return false;
+                }
+
+                if (!departmentId) {
+                    e.preventDefault();
+                    alert('Please select a department.');
+                    return false;
+                }
+            });
+
+            // Availability time validation
+            $('#availableFromSelect, #availableToSelect').change(function() {
+                var fromTime = $('#availableFromSelect').val();
+                var toTime = $('#availableToSelect').val();
+
+                if (fromTime && toTime && fromTime >= toTime) {
+                    alert('Available From time must be earlier than Available To time.');
+                    $(this).focus();
+                }
+            });
+
+            // Dynamic filtering of end time based on start time
+            $('#availableFromSelect').change(function() {
+                var selectedStartTime = $(this).val();
+                var endTimeSelect = $('#availableToSelect');
+                
+                if (selectedStartTime) {
+                    // Enable all options first
+                    endTimeSelect.find('option').prop('disabled', false);
+                    
+                    // Disable options that are earlier than or equal to start time
+                    endTimeSelect.find('option').each(function() {
+                        var optionValue = $(this).val();
+                        if (optionValue && optionValue <= selectedStartTime) {
+                            $(this).prop('disabled', true);
+                        }
+                    });
+                    
+                    // Clear selection if current selection is invalid
+                    if (endTimeSelect.val() && endTimeSelect.val() <= selectedStartTime) {
+                        endTimeSelect.val('');
+                    }
+                } else {
+                    // Re-enable all options if no start time selected
+                    endTimeSelect.find('option').prop('disabled', false);
+                }
+            });
+        });
+    </script>
+}

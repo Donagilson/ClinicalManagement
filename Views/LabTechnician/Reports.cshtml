@@ -1,0 +1,63 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.LabReport>
+
+@{
+    ViewData["Title"] = "My Lab Reports";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>My Lab Reports</h2>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Report Code</th>
+                        <th>Patient</th>
+                        <th>Test</th>
+                        <th>Doctor</th>
+                        <th>Collection Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var report in Model)
+                    {
+                        <tr>
+                            <td>@report.ReportCode</td>
+                            <td>@report.PatientName</td>
+                            <td>@report.TestName</td>
+                            <td>@report.DoctorName</td>
+                            <td>@report.CollectionDate.ToShortDateString()</td>
+                            <td>
+                                @if (report.Status == "Pending")
+                                {
+                                    <span class="badge badge-warning">Pending</span>
+                                }
+                                else if (report.Status == "Completed")
+                                {
+                                    <span class="badge badge-success">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">@report.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("EditReport", "LabTechnician", new { id = report.LabReportId })" class="btn btn-sm btn-primary">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

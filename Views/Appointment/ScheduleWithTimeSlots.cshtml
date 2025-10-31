@@ -1,0 +1,494 @@
+@model ClinicalManagementSystem2025.ViewModels.AppointmentViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Schedule Appointment - Time Slot Selection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-calendar-plus me-2"></i>Schedule Appointment
+                    </h2>
+                    <p class="text-muted mb-0">Book an appointment with visual time slot selection</p>
+                </div>
+                <div>
+                    <a asp-action="Schedule" class="btn btn-outline-purple">
+                        <i class="fas fa-calendar-alt me-1"></i>Basic Booking
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show border-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Success!</strong> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show border-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error!</strong> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Appointment Form -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Patient & Doctor Selection
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Schedule" method="post" id="appointmentForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="PatientId" class="form-label">Select Patient</label>
+                            <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients as SelectList" required>
+                                <option value="">-- Select Patient --</option>
+                            </select>
+                            <span asp-validation-for="PatientId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DoctorId" class="form-label">Select Doctor</label>
+                            <select asp-for="DoctorId" class="form-select" id="doctorSelect" required>
+                                <option value="">-- Select Doctor --</option>
+                                @if (ViewBag.Doctors != null)
+                                {
+                                    foreach (var doctor in (SelectList)ViewBag.Doctors)
+                                    {
+                                        <option value="@doctor.Value">@doctor.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="DoctorId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AppointmentDate" class="form-label">Select Date & Time</label>
+                            <input asp-for="AppointmentDate" type="datetime-local" class="form-control" id="appointmentDateTime" required />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                            <small class="text-muted">Select your preferred date and time</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DurationMinutes" class="form-label">Consultation Duration</label>
+                            <select asp-for="DurationMinutes" class="form-select">
+                                <option value="15">15 minutes</option>
+                                <option value="30" selected>30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">60 minutes</option>
+                            </select>
+                            <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Reason" class="form-label">Reason for Visit</label>
+                            <textarea asp-for="Reason" class="form-control" rows="3" placeholder="Brief description of the reason for appointment"></textarea>
+                            <span asp-validation-for="Reason" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Additional Notes</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Any additional information"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-purple btn-lg" id="bookAppointmentBtn">
+                                <i class="fas fa-calendar-check me-2"></i>Book Appointment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Slot Selection -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>Available Time Slots
+                    </h5>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-light text-dark me-2" id="selectedDate">Select a doctor and date</span>
+                        <button type="button" class="btn btn-light btn-sm" id="refreshSlots">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Legend -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="time-slot-legend available-time me-2"></div>
+                                    <small>Available</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="time-slot-legend booked-time me-2"></div>
+                                    <small>Booked</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="time-slot-legend past-time me-2"></div>
+                                    <small>Past Time</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Slots Grid -->
+                    <div id="timeSlotsContainer">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-purple" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-muted mt-2">Select a doctor and date to view available time slots</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Time Selection -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-time-btn" data-time="09:00">9:00 AM</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-time-btn" data-time="10:00">10:00 AM</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-time-btn" data-time="11:00">11:00 AM</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-time-btn" data-time="14:00">2:00 PM</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-time-btn" data-time="15:00">3:00 PM</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-time-btn" data-time="16:00">4:00 PM</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.time-slot {
+    display: inline-block;
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 8px;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 2px solid transparent;
+}
+
+.time-slot.available-time {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.time-slot.available-time:hover {
+    background-color: #c3e6cb;
+    border-color: #b8daff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.time-slot.booked-time {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.time-slot.past-time {
+    background-color: #f5f5f5;
+    color: #6c757d;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.time-slot.selected-time {
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #0056b3 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+.time-slot-legend {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.time-slot-legend.available-time {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.time-slot-legend.booked-time {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.time-slot-legend.past-time {
+    background-color: #f5f5f5;
+    border: 1px solid #dee2e6;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #7b68ee;
+    box-shadow: 0 0 0 0.2rem rgba(123, 104, 238, 0.25);
+}
+
+.quick-time-btn {
+    transition: all 0.3s ease;
+}
+
+.quick-time-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var selectedTimeSlot = null;
+
+            // Load time slots when doctor or date changes
+            $('#doctorSelect, #appointmentDateTime').change(function() {
+                loadTimeSlots();
+            });
+
+            // Quick time selection buttons
+            $('.quick-time-btn').click(function() {
+                var timeValue = $(this).data('time');
+                var currentDate = $('#appointmentDateTime').val();
+
+                if (currentDate) {
+                    // Set the time in the datetime-local input
+                    var dateTimeValue = currentDate.split('T')[0] + 'T' + timeValue;
+                    $('#appointmentDateTime').val(dateTimeValue);
+
+                    // Trigger change event
+                    $('#appointmentDateTime').trigger('change');
+                } else {
+                    alert('Please select a date first');
+                }
+            });
+
+            // Refresh slots button
+            $('#refreshSlots').click(function() {
+                loadTimeSlots();
+            });
+
+            function loadTimeSlots() {
+                var doctorId = $('#doctorSelect').val();
+                var appointmentDate = $('#appointmentDateTime').val();
+
+                if (!doctorId || !appointmentDate) {
+                    $('#timeSlotsContainer').html(`
+                        <div class="text-center py-4">
+                            <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">Select a doctor and date to view available time slots</p>
+                        </div>
+                    `);
+                    $('#selectedDate').text('Select a doctor and date');
+                    return;
+                }
+
+                // Show loading
+                $('#timeSlotsContainer').html(`
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-purple" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading available time slots...</p>
+                    </div>
+                `);
+
+                // Update selected date display
+                var dateObj = new Date(appointmentDate);
+                var formattedDate = dateObj.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                $('#selectedDate').text(formattedDate);
+
+                // AJAX call to get time slots
+                $.ajax({
+                    url: '/Appointment/GetAvailableTimeSlots',
+                    type: 'GET',
+                    data: {
+                        doctorId: doctorId,
+                        appointmentDate: appointmentDate
+                    },
+                    success: function(data) {
+                        renderTimeSlots(data);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#timeSlotsContainer').html(`
+                            <div class="text-center py-4">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                                <p class="text-muted">Error loading time slots. Please try again.</p>
+                                <button type="button" class="btn btn-outline-purple btn-sm" onclick="loadTimeSlots()">
+                                    <i class="fas fa-sync-alt me-1"></i>Retry
+                                </button>
+                            </div>
+                        `);
+                    }
+                });
+            }
+
+            function renderTimeSlots(data) {
+                var html = '<div class="row justify-content-center">';
+
+                if (data.availableSlots && data.availableSlots.length > 0) {
+                    // Show available slots first
+                    data.availableSlots.forEach(function(slot) {
+                        html += `
+                            <div class="col-auto mb-2">
+                                <div class="time-slot available-time" data-time="${slot.timeValue}" onclick="selectTimeSlot('${slot.timeValue}', this)">
+                                    ${slot.time}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Show booked/past slots
+                    if (data.bookedSlots && data.bookedSlots.length > 0) {
+                        html += '<div class="w-100 mt-3"></div>'; // Break to next row
+                        data.bookedSlots.forEach(function(slot) {
+                            html += `
+                                <div class="col-auto mb-2">
+                                    <div class="time-slot ${slot.className}" onclick="showSlotInfo('${slot.time}', ${slot.isAvailable}, ${slot.isPast})">
+                                        ${slot.time}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                } else {
+                    html += `
+                        <div class="col-12 text-center py-4">
+                            <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No available time slots for the selected date.</p>
+                            <small class="text-muted">Please choose a different date or doctor.</small>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                $('#timeSlotsContainer').html(html);
+            }
+
+            // Global functions for time slot interaction
+            window.selectTimeSlot = function(timeValue, element) {
+                // Remove previous selection
+                $('.time-slot').removeClass('selected-time');
+
+                // Add selection to clicked slot
+                $(element).addClass('selected-time');
+
+                // Update the datetime input
+                var currentDate = $('#appointmentDateTime').val();
+                if (currentDate) {
+                    var datePart = currentDate.split('T')[0];
+                    var newDateTime = datePart + 'T' + timeValue;
+                    $('#appointmentDateTime').val(newDateTime);
+                }
+
+                selectedTimeSlot = timeValue;
+            };
+
+            window.showSlotInfo = function(time, isAvailable, isPast) {
+                var message = '';
+                if (isPast) {
+                    message = `${time} - This time slot has already passed`;
+                } else if (!isAvailable) {
+                    message = `${time} - This time slot is already booked`;
+                } else {
+                    message = `${time} - This time slot is available`;
+                }
+
+                alert(message);
+            };
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,187 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.LabTest>
+
+@{
+    ViewData["Title"] = "Available Lab Tests";
+    var doctorInfo = ViewBag.DoctorInfo as ClinicalManagementSystem2025.Models.Doctor;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Available Lab Tests</h2>
+                    <p class="text-muted mb-0">Select lab tests to prescribe for patients</p>
+                </div>
+                <a href="@Url.Action("Index", "Doctor")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (Model.Any())
+            {
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Test Code</th>
+                                        <th>Test Name</th>
+                                        <th>Description</th>
+                                        <th>Normal Range</th>
+                                        <th>Unit</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var labTest in Model)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-primary">@labTest.TestCode</span></td>
+                                            <td>
+                                                <strong>@labTest.TestName</strong>
+                                            </td>
+                                            <td>@(labTest.Description ?? "No description available")</td>
+                                            <td>@(labTest.NormalRange ?? "Not specified")</td>
+                                            <td>@(labTest.Unit ?? "N/A")</td>
+                                            <td>₹@labTest.Price</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-primary" onclick="prescribeTest(@labTest.LabTestId, '@labTest.TestName', @labTest.Price)">
+                                                    <i class="fas fa-plus me-1"></i>Prescribe
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-flask fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Lab Tests Available</h5>
+                        <p class="text-muted mb-0">No lab tests have been configured in the system yet.</p>
+                        <p class="text-muted">Please contact the administrator to add lab tests.</p>
+                        <a href="@Url.Action("Index", "Doctor")" class="btn btn-outline-secondary mt-3">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Prescribe Test Modal -->
+<div class="modal fade" id="prescribeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prescribe Lab Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="get" action="@Url.Action("PrescribeLabTest", "Doctor")">
+                <div class="modal-body">
+                    <input type="hidden" id="modalLabTestId" name="labTestId" />
+                    <input type="hidden" id="modalLabTestName" name="testName" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Selected Test:</label>
+                        <p class="mb-0" id="modalTestInfo"></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modalPatientId" class="form-label">Patient ID *</label>
+                        <input type="number" class="form-control" id="modalPatientId" name="patientId" required
+                               placeholder="Enter patient ID">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modalAppointmentId" class="form-label">Appointment ID (Optional)</label>
+                        <input type="number" class="form-control" id="modalAppointmentId" name="appointmentId"
+                               placeholder="Enter appointment ID if applicable">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Continue to Prescription</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.border-primary {
+    border-color: #007bff !important;
+}
+</style>
+
+<script>
+function prescribeTest(labTestId, testName, price) {
+    document.getElementById('modalLabTestId').value = labTestId;
+    document.getElementById('modalLabTestName').value = testName;
+    document.getElementById('modalTestInfo').textContent = testName + ' - ₹' + price;
+
+    var prescribeModal = new bootstrap.Modal(document.getElementById('prescribeModal'));
+    prescribeModal.show();
+}
+</script>

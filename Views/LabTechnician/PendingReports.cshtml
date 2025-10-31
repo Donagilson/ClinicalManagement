@@ -1,0 +1,42 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.LabReport>
+
+@{
+    ViewData["Title"] = "Pending Lab Reports";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Pending Lab Reports</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Report Code</th>
+                        <th>Patient</th>
+                        <th>Test</th>
+                        <th>Doctor</th>
+                        <th>Collection Date</th>
+                        <th>Technician</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var report in Model)
+                    {
+                        <tr>
+                            <td>@report.ReportCode</td>
+                            <td>@report.PatientName</td>
+                            <td>@report.TestName</td>
+                            <td>@report.DoctorName</td>
+                            <td>@report.CollectionDate.ToShortDateString()</td>
+                            <td>@report.LabTechnicianName</td>
+                            <td>
+                                <a href="@Url.Action("EditReport", "LabTechnician", new { id = report.LabReportId })" class="btn btn-sm btn-primary">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

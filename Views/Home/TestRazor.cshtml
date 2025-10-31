@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Razor Test Page";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Razor View Test
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success" role="alert">
+                        <h5 class="alert-heading">Success!</h5>
+                        <p>@ViewBag.TestMessage</p>
+                        <hr>
+                        <p class="mb-0">
+                            <strong>Current Time:</strong> @ViewBag.CurrentTime
+                        </p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6>JavaScript Test:</h6>
+                            <button id="testBtn" class="btn btn-primary">
+                                <i class="fas fa-play me-1"></i>
+                                Test JavaScript
+                            </button>
+                            <div id="jsResult" class="mt-2"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Razor Syntax Test:</h6>
+                            <ul class="list-group list-group-flush">
+                                @for (int i = 1; i <= 3; i++)
+                                {
+                                    <li class="list-group-item">
+                                        Item @i - Generated at @DateTime.Now.ToString("HH:mm:ss")
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#testBtn').click(function() {
+                const now = new Date().toLocaleString();
+                $('#jsResult').html(`
+                    <div class="alert alert-info mt-2">
+                        <small><strong>JavaScript executed at:</strong> ${now}</small>
+                    </div>
+                `);
+            });
+        });
+    </script>
+}

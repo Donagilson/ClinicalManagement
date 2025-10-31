@@ -1,0 +1,290 @@
+@{
+    ViewData["Title"] = "Pharmacy Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Pharmacy Reports
+                    </h2>
+                    <p class="text-muted mb-0">Generate and view pharmacy analytics and reports</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Generation Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus me-2"></i>Generate Medicine Report
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="GenerateReport" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="medicineId" class="form-label">Select Medicine *</label>
+                                <select name="medicineId" id="medicineId" class="form-select" required>
+                                    <option value="">Choose a medicine...</option>
+                                    @if (ViewBag.Medicines != null)
+                                    {
+                                        foreach (var medicine in ViewBag.Medicines)
+                                        {
+                                            <option value="@medicine.MedicineId">
+                                                @medicine.MedicineName (@medicine.MedicineCode) - ₹@medicine.UnitPrice.ToString("F2")
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="startDate" class="form-label">Start Date *</label>
+                                <input type="date" name="startDate" id="startDate" class="form-control" required
+                                       value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="endDate" class="form-label">End Date *</label>
+                                <input type="date" name="endDate" id="endDate" class="form-control" required
+                                       value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                            <button type="submit" class="btn btn-purple">
+                                <i class="fas fa-chart-line me-1"></i>Generate Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-pills fa-2x text-purple mb-2"></i>
+                    <h5 class="card-title">@((ViewBag.Medicines as IEnumerable<dynamic>)?.Count() ?? 0)</h5>
+                    <p class="card-text text-muted">Total Medicines</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-boxes fa-2x text-info mb-2"></i>
+                    <h5 class="card-title">@((ViewBag.LowStockItems as IEnumerable<dynamic>)?.Count() ?? 0)</h5>
+                    <p class="card-text text-muted">Low Stock Items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-prescription-bottle-alt fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">0</h5>
+                    <p class="card-text text-muted">Prescriptions Today</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+                    <h5 class="card-title">₹0.00</h5>
+                    <p class="card-text text-muted">Revenue Today</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Reports -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Medicine Usage Reports
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Track medicine dispensing patterns, popular medicines, and usage trends over time.</p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-info" onclick="generateUsageReport()">
+                            <i class="fas fa-chart-bar me-1"></i>Generate Usage Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Stock Management Reports
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Monitor stock levels, identify slow-moving items, and track inventory turnover.</p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-warning" onclick="generateStockReport()">
+                            <i class="fas fa-warehouse me-1"></i>Generate Stock Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-dollar-sign me-2"></i>Revenue Reports
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Analyze revenue trends, profit margins, and financial performance.</p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-success" onclick="generateRevenueReport()">
+                            <i class="fas fa-money-bill-wave me-1"></i>Generate Revenue Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-prescription-bottle-alt me-2"></i>Prescription Reports
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Track prescription fulfillment, doctor prescribing patterns, and patient medication history.</p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-danger" onclick="generatePrescriptionReport()">
+                            <i class="fas fa-file-medical me-1"></i>Generate Prescription Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+    height: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-text {
+    flex-grow: 1;
+}
+
+.d-grid {
+    margin-top: auto;
+}
+</style>
+
+<script>
+function generateUsageReport() {
+    alert('Usage report generation would be implemented here. This would create a comprehensive report of medicine usage patterns.');
+}
+
+function generateStockReport() {
+    window.location.href = '/Pharmacy/LowStock';
+}
+
+function generateRevenueReport() {
+    alert('Revenue report generation would be implemented here. This would analyze sales data and profit margins.');
+}
+
+function generatePrescriptionReport() {
+    window.location.href = '/Pharmacy/Prescriptions';
+}
+
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+
+    function validateDates() {
+        if (startDateInput && endDateInput) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            if (startDate > endDate) {
+                endDateInput.setCustomValidity('End date cannot be before start date');
+            } else {
+                endDateInput.setCustomValidity('');
+            }
+        }
+    }
+
+    if (startDateInput) startDateInput.addEventListener('change', validateDates);
+    if (endDateInput) endDateInput.addEventListener('change', validateDates);
+});
+</script>

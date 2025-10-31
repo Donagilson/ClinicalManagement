@@ -1,0 +1,420 @@
+@model ClinicalManagementSystem2025.Models.Appointment
+@{
+    ViewData["Title"] = "Schedule Appointment";
+    var patient = ViewBag.Patient as Patient;
+    var departments = ViewBag.Departments as IEnumerable<Department>;
+    var doctors = ViewBag.Doctors as IEnumerable<Doctor>;
+    var minDate = ViewBag.MinDate as string ?? DateTime.Now.ToString("yyyy-MM-dd");
+    var maxDate = ViewBag.MaxDate as string ?? DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd");
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-olive">
+            <i class="fas fa-calendar-plus me-2"></i>Schedule Appointment
+        </h1>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Patient Information Card -->
+    <div class="card mb-4 border-olive">
+        <div class="card-header bg-olive text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user me-2"></i>Patient Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Name:</strong> @patient?.FullName</p>
+                    <p><strong>Age:</strong> @patient?.Age years</p>
+                    <p><strong>Phone:</strong> @patient?.Phone</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Gender:</strong> @patient?.Gender</p>
+                    <p><strong>Blood Group:</strong> @patient?.BloodGroup</p>
+                    <p><strong>Email:</strong> @patient?.Email</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Form -->
+    <div class="card border-olive">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 text-olive">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Details
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="ScheduleAppointment" id="appointmentForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="PatientId" value="@patient?.PatientId" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row">
+                    <!-- Department Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Department</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-olive text-white"><i class="fas fa-hospital"></i></span>
+                            <select class="form-control" id="departmentSelect">
+                                <option value="">-- All Departments --</option>
+                                @if (departments != null)
+                                {
+                                    foreach (var department in departments)
+                                    {
+                                        <option value="@department.DepartmentId">@department.DepartmentName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <small class="text-muted">Filter doctors by department (optional)</small>
+                    </div>
+
+                    <!-- Doctor Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DoctorId" class="form-label fw-bold">Select Doctor *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-olive text-white"><i class="fas fa-user-md"></i></span>
+                            <select asp-for="DoctorId" class="form-control" id="doctorSelect" required>
+                                <option value="">-- Select Doctor --</option>
+                                @if (doctors != null)
+                                {
+                                    foreach (var doctor in doctors)
+                                    {
+                                        <option value="@doctor.DoctorId"
+                                                data-consultationfee="@doctor.ConsultationFee"
+                                                data-availablefrom="@(doctor.AvailableFrom.HasValue ? DateTime.Today.Add(doctor.AvailableFrom.Value).ToString("hh:mm tt") : "")"
+                                                data-availableto="@(doctor.AvailableTo.HasValue ? DateTime.Today.Add(doctor.AvailableTo.Value).ToString("hh:mm tt") : "")"
+                                                data-doctorname="@doctor.DoctorName"
+                                                data-specialization="@doctor.Specialization">
+                                            @doctor.DoctorName (@doctor.Specialization) - ₹@doctor.ConsultationFee
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="DoctorId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Consultation Fee Display -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Consultation Fee</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-rupee-sign"></i></span>
+                            <input type="text" class="form-control" id="consultationFee" readonly placeholder="Select doctor to see fee">
+                        </div>
+                    </div>
+
+                    <!-- Available Hours Display -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Available Hours</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-clock"></i></span>
+                            <input type="text" class="form-control" id="availableHours" readonly placeholder="Select doctor to see availability">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Appointment Date -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AppointmentDate" class="form-label fw-bold">Appointment Date *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-olive text-white"><i class="fas fa-calendar"></i></span>
+                            <input asp-for="AppointmentDate" type="date" class="form-control"
+                                   min="@minDate" max="@maxDate" required />
+                        </div>
+                        <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Appointment Time -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AppointmentTime" class="form-label fw-bold">Appointment Time *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-olive text-white"><i class="fas fa-clock"></i></span>
+                            <input asp-for="AppointmentTime" type="time" class="form-control" required />
+                        </div>
+                        <span asp-validation-for="AppointmentTime" class="text-danger small"></span>
+                        <div class="mt-2" id="slotLegend">
+                            <span class="badge bg-success me-2">Available</span>
+                            <span class="badge bg-danger">Booked</span>
+                        </div>
+                        <div class="mt-2" id="slotGrid" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Duration -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DurationMinutes" class="form-label fw-bold">Duration (Minutes)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-hourglass-half"></i></span>
+                            <select asp-for="DurationMinutes" class="form-control">
+                                <option value="15">15 minutes</option>
+                                <option value="30" selected>30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">1 hour</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Status (set hidden; shown only after scheduling on success page) -->
+                    <input type="hidden" asp-for="Status" value="Scheduled" />
+                </div>
+
+                
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-olive btn-lg me-2" id="scheduleBtn">
+                        <i class="fas fa-calendar-check me-2"></i>Schedule Appointment
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Auto-hide alerts
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Set minimum time based on current time if today is selected
+            $('#AppointmentDate').change(function() {
+                const selectedDate = new Date($(this).val());
+                const today = new Date();
+                const timeInput = $('#AppointmentTime');
+
+                if (selectedDate.toDateString() === today.toDateString()) {
+                    // If today is selected, set minimum time to current time + 1 hour
+                    const minTime = new Date(today.getTime() + 60 * 60 * 1000);
+                    const minTimeString = minTime.getHours().toString().padStart(2, '0') + ':' +
+                                         minTime.getMinutes().toString().padStart(2, '0');
+                    timeInput.attr('min', minTimeString);
+                } else {
+                    timeInput.removeAttr('min');
+                }
+
+                refreshSlots();
+            });
+
+            // Department filter
+            $('#departmentSelect').change(function() {
+                const departmentId = $(this).val();
+                const $doctorSelect = $('#doctorSelect');
+
+                if (departmentId) {
+                    $doctorSelect.html('<option value="">-- Loading doctors --</option>');
+
+                    $.get('@Url.Action("GetDoctorsByDepartment", "Receptionist")', { departmentId: departmentId })
+                        .done(function(response) {
+                            if (response.success && response.doctors) {
+                                let options = '<option value="">-- Select Doctor --</option>';
+                                response.doctors.forEach(function(doctor) {
+                                    // Convert TimeSpan to 12-hour format
+                                    const availableFromFormatted = formatTimeSpanTo12Hour(doctor.availableFrom);
+                                    const availableToFormatted = formatTimeSpanTo12Hour(doctor.availableTo);
+
+                                    options += `<option value="${doctor.doctorId}"
+                                            data-consultationfee="${doctor.consultationFee}"
+                                            data-availablefrom="${availableFromFormatted}"
+                                            data-availableto="${availableToFormatted}"
+                                            data-doctorname="${doctor.doctorName}"
+                                            data-specialization="${doctor.specialization}">
+                                        ${doctor.doctorName} (${doctor.specialization}) - ₹${doctor.consultationFee}
+                                    </option>`;
+                                });
+                                $doctorSelect.html(options);
+                            } else {
+                                $doctorSelect.html('<option value="">-- No doctors found --</option>');
+                            }
+                        })
+                        .fail(function() {
+                            $doctorSelect.html('<option value="">-- Error loading doctors --</option>');
+                        });
+                } else {
+                    // Reset to all doctors
+                    $doctorSelect.html('<option value="">-- Select Doctor --</option>');
+                    @if (doctors != null)
+                    {
+                        foreach (var doctor in doctors)
+                        {
+                            <text>
+                            $doctorSelect.append('<option value="@doctor.DoctorId" data-consultationfee="@doctor.ConsultationFee" data-availablefrom="@(doctor.AvailableFrom.HasValue ? DateTime.Today.Add(doctor.AvailableFrom.Value).ToString("hh:mm tt") : "")" data-availableto="@(doctor.AvailableTo.HasValue ? DateTime.Today.Add(doctor.AvailableTo.Value).ToString("hh:mm tt") : "")" data-doctorname="@doctor.DoctorName" data-specialization="@doctor.Specialization">@doctor.DoctorName (@doctor.Specialization) - ₹@doctor.ConsultationFee</option>');
+                            </text>
+                        }
+                    }
+                }
+            });
+
+            // Doctor selection change
+            $('#doctorSelect').change(function() {
+                const selectedOption = $(this).find('option:selected');
+                const consultationFee = selectedOption.data('consultationfee');
+                const availableFrom = selectedOption.data('availablefrom');
+                const availableTo = selectedOption.data('availableto');
+
+                if (consultationFee) {
+                    $('#consultationFee').val('₹' + consultationFee);
+                } else {
+                    $('#consultationFee').val('Select doctor to see fee');
+                }
+
+                if (availableFrom && availableTo) {
+                    $('#availableHours').val(availableFrom + ' - ' + availableTo);
+                } else {
+                    $('#availableHours').val('Select doctor to see availability');
+                }
+
+                refreshSlots();
+            });
+
+            // Form validation
+            $('#appointmentForm').on('submit', function(e) {
+                const doctorId = $('#doctorSelect').val();
+                const appointmentDate = $('#AppointmentDate').val();
+                const appointmentTime = $('#AppointmentTime').val();
+
+                if (!doctorId) {
+                    e.preventDefault();
+                    alert('Please select a doctor.');
+                    $('#doctorSelect').focus();
+                    return false;
+                }
+
+                if (!appointmentDate) {
+                    e.preventDefault();
+                    alert('Please select appointment date.');
+                    $('#AppointmentDate').focus();
+                    return false;
+                }
+
+                if (!appointmentTime) {
+                    e.preventDefault();
+                    alert('Please select appointment time.');
+                    $('#AppointmentTime').focus();
+                    return false;
+                }
+
+                // Show loading state
+                $('#scheduleBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Scheduling...');
+            });
+
+            // Helper function to convert TimeSpan to 12-hour format
+            function formatTimeSpanTo12Hour(timeSpan) {
+                if (!timeSpan) return '';
+
+                // TimeSpan format: "HH:mm:ss" (24-hour)
+                const timeParts = timeSpan.split(':');
+                if (timeParts.length < 2) return timeSpan;
+
+                let hours = parseInt(timeParts[0]);
+                const minutes = timeParts[1];
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+
+                hours = hours % 12;
+                hours = hours ? hours : 12; // 0 should be 12
+
+                return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+            }
+
+            // Time validation against doctor's available hours
+            $('#AppointmentTime').change(function() {
+                const selectedTime = $(this).val();
+                const selectedDoctor = $('#doctorSelect').find('option:selected');
+                const availableFrom = selectedDoctor.data('availablefrom');
+                const availableTo = selectedDoctor.data('availableto');
+
+                if (selectedTime && availableFrom && availableTo) {
+                    if (selectedTime < availableFrom || selectedTime > availableTo) {
+                        alert('Selected time is outside doctor\'s available hours (' + availableFrom + ' - ' + availableTo + ')');
+                        $(this).val('');
+                    }
+                }
+            });
+
+            // Refresh on duration change
+            $('#DurationMinutes').change(function() {
+                refreshSlots();
+            });
+
+            function refreshSlots() {
+                const doctorId = $('#doctorSelect').val();
+                const date = $('#AppointmentDate').val();
+                const duration = $('#DurationMinutes').val() || 30;
+                const $grid = $('#slotGrid');
+
+                if (!doctorId || !date) {
+                    $grid.empty();
+                    return;
+                }
+
+                $grid.html('<span class="text-muted">Loading slots...</span>');
+
+                $.get('@Url.Action("GetAvailabilitySlots", "Receptionist")', {
+                    doctorId: doctorId,
+                    date: date,
+                    durationMinutes: duration
+                }).done(function(resp) {
+                    if (!resp.success || !resp.slots) {
+                        $grid.html('<span class="text-danger">Unable to load availability.</span>');
+                        return;
+                    }
+
+                    let html = '';
+                    resp.slots.forEach(function(s) {
+                        const cls = s.available ? 'btn-success' : 'btn-danger disabled';
+                        html += `<button type="button" class="btn btn-sm ${cls} slot-btn" data-time="${s.time24}">${s.time12}</button>`;
+                    });
+                    $grid.html(html);
+
+                    // Click handler to set time when available
+                    $('#slotGrid .slot-btn').off('click').on('click', function() {
+                        if ($(this).hasClass('disabled')) return;
+                        const t = $(this).data('time');
+                        $('#AppointmentTime').val(t);
+                    });
+                }).fail(function() {
+                    $grid.html('<span class="text-danger">Failed to load availability.</span>');
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,370 @@
+@model ClinicalManagementSystem2025.Models.Medicine
+
+@{
+    ViewData["Title"] = "Medicine Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-pills me-2"></i>@Model.MedicineName
+                    </h2>
+                    <p class="text-muted mb-0">Medicine details and inventory information</p>
+                </div>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.MedicineId" class="btn btn-outline-warning me-2">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Medicine Information -->
+            <div class="card shadow-sm border-purple mb-4">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Medicine Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Medicine Code</label>
+                                <div class="info-value">
+                                    <span class="badge bg-purple fs-6">@Model.MedicineCode</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Category</label>
+                                <div class="info-value">@(Model.Category ?? "General")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Generic Name</label>
+                                <div class="info-value">@(Model.GenericName ?? "N/A")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Form</label>
+                                <div class="info-value">@(Model.Form ?? "N/A")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Strength</label>
+                                <div class="info-value">@(Model.Strength ?? "N/A")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Unit Price</label>
+                                <div class="info-value">₹@Model.UnitPrice.ToString("F2")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Prescription</label>
+                                <div class="info-value">
+                                    @if (Model.RequiresPrescription)
+                                    {
+                                        <span class="badge bg-danger">Required</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Over-the-Counter</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Stock Status</label>
+                                <div class="info-value">
+                                    @if (Model.IsLowStock)
+                                    {
+                                        <span class="badge bg-warning">Low Stock (@Model.StockQuantity)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">In Stock (@Model.StockQuantity)</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Information -->
+        @if (ViewBag.Inventory != null)
+        {
+            var inventory = ViewBag.Inventory as ClinicalManagementSystem2025.Models.PharmacyInventory;
+            <div class="card shadow-sm border-purple mb-4">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-boxes me-2"></i>Inventory Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <label class="info-label">Current Stock</label>
+                                <div class="info-value">
+                                    <span class="badge fs-6 @(inventory.CurrentStock <= inventory.MinStockLevel ? "bg-danger" : "bg-success")">
+                                        @inventory.CurrentStock
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <label class="info-label">Min Stock Level</label>
+                                <div class="info-value">@inventory.MinStockLevel</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <label class="info-label">Max Stock Level</label>
+                                <div class="info-value">@inventory.MaxStockLevel</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Batch Number</label>
+                                <div class="info-value">@(inventory.BatchNumber ?? "N/A")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Expiry Date</label>
+                                <div class="info-value">
+                                    @if (inventory.ExpiryDate.HasValue)
+                                    {
+                                        @inventory.ExpiryDate.Value.ToString("yyyy-MM-dd")
+                                        @if (inventory.ExpiryDate.Value < DateTime.Now)
+                                        {
+                                            <span class="badge bg-danger ms-2">Expired</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Cost Price</label>
+                                <div class="info-value">₹@inventory.CostPrice.ToString("F2")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Selling Price</label>
+                                <div class="info-value">₹@inventory.SellingPrice.ToString("F2")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow-sm border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Inventory Not Set Up
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">No inventory information is available for this medicine.</p>
+                    <a asp-controller="Pharmacy" asp-action="AddInventory" asp-route-medicineId="@Model.MedicineId" class="btn btn-warning btn-sm mt-2">
+                        <i class="fas fa-plus me-1"></i>Set Up Inventory
+                    </a>
+                </div>
+            </div>
+        }
+
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow-sm border-purple mb-4">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Pharmacy" asp-action="AddInventory" asp-route-medicineId="@Model.MedicineId" class="btn btn-outline-purple">
+                            <i class="fas fa-boxes me-1"></i>Manage Inventory
+                        </a>
+                        <button type="button" class="btn btn-outline-info" onclick="generateReport(@Model.MedicineId)">
+                            <i class="fas fa-chart-bar me-1"></i>View Reports
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="dispenseMedicine(@Model.MedicineId)">
+                            <i class="fas fa-capsules me-1"></i>Dispense Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Stock Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Inventory != null)
+                    {
+                        var inventory = ViewBag.Inventory as ClinicalManagementSystem2025.Models.PharmacyInventory;
+                        var stockPercentage = (double)inventory.CurrentStock / inventory.MaxStockLevel * 100;
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Stock Level</span>
+                                <span>@inventory.CurrentStock / @inventory.MaxStockLevel</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar @(stockPercentage < 20 ? "bg-danger" : stockPercentage < 50 ? "bg-warning" : "bg-success")"
+                                     style="width: @stockPercentage%"></div>
+                            </div>
+                        </div>
+
+                        @if (inventory.CurrentStock <= inventory.MinStockLevel)
+                        {
+                            <div class="alert alert-danger py-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Low stock! Reorder needed.
+                            </div>
+                        }
+                        else if (inventory.ExpiryDate.HasValue && inventory.ExpiryDate.Value < DateTime.Now.AddMonths(3))
+                        {
+                            <div class="alert alert-warning py-2">
+                                <i class="fas fa-clock me-1"></i>
+                                Expiring soon: @inventory.ExpiryDate.Value.ToString("yyyy-MM-dd")
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info py-2">
+                            <i class="fas fa-info-circle me-1"></i>
+                            No inventory data available.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.info-item {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #7b68ee;
+    height: 100%;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+function generateReport(medicineId) {
+    window.location.href = '/Pharmacy/DispenseHistory?medicineId=' + medicineId;
+}
+
+function dispenseMedicine(medicineId) {
+    window.location.href = '/Pharmacy/Dispense?medicineId=' + medicineId;
+}
+</script>

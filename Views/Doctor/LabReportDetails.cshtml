@@ -1,0 +1,338 @@
+@model ClinicalManagementSystem2025.Models.LabReport
+
+@{
+    ViewData["Title"] = "Lab Report Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-file-medical me-2"></i>Lab Report Details
+                    </h2>
+                    <p class="text-muted mb-0">Complete lab test results and findings</p>
+                </div>
+                <div>
+                    <a asp-action="LabReports" class="btn btn-outline-purple me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Reports
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Information -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>Report Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Report Code:</label>
+                                <div class="info-value">
+                                    <span class="badge bg-primary fs-6">@Model.ReportCode</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Status:</label>
+                                <div class="info-value">
+                                    @if (Model.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Completed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@Model.Status</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Collection Date:</label>
+                                <div class="info-value">@Model.CollectionDate.ToString("dddd, MMMM dd, yyyy")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Report Date:</label>
+                                <div class="info-value">
+                                    @if (Model.ReportDate.HasValue)
+                                    {
+                                        @Model.ReportDate.Value.ToString("dddd, MMMM dd, yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not available</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user me-2"></i>Patient Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <label class="info-label">Name:</label>
+                        <div class="info-value">@Model.PatientName</div>
+                    </div>
+                    <div class="info-item mt-2">
+                        <label class="info-label">Patient ID:</label>
+                        <div class="info-value">CS@Model.PatientId.ToString("00")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Results -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-flask me-2"></i>Test Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Test Name:</label>
+                                <div class="info-value">@Model.TestName</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Lab Technician:</label>
+                                <div class="info-value">@Model.LabTechnicianName</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <label class="info-label">Result Value:</label>
+                                <div class="info-value">
+                                    @if (!string.IsNullOrEmpty(Model.ResultValue))
+                                    {
+                                        <span class="h5 text-primary">@Model.ResultValue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not available</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <label class="info-label">Unit:</label>
+                                <div class="info-value">
+                                    @if (!string.IsNullOrEmpty(Model.ResultUnit))
+                                    {
+                                        @Model.ResultUnit
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <label class="info-label">Normal Range:</label>
+                                <div class="info-value">
+                                    @if (ViewBag.LabTest != null)
+                                    {
+                                        var labTest = ViewBag.LabTest as ClinicalManagementSystem2025.Models.LabTest;
+                                        @if (!string.IsNullOrEmpty(labTest?.NormalRange))
+                                        {
+                                            @labTest.NormalRange
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not specified</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not available</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Findings and Notes -->
+    @if (!string.IsNullOrEmpty(Model.Findings) || !string.IsNullOrEmpty(Model.Notes))
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-purple">
+                    <div class="card-header bg-purple text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-notes-medical me-2"></i>Findings & Notes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(Model.Findings))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Findings:</label>
+                                <div class="border rounded p-3 bg-light">
+                                    @Model.Findings
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Notes:</label>
+                                <div class="border rounded p-3 bg-light">
+                                    @Model.Notes
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h6 class="card-title mb-3">Actions</h6>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i>Print Report
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="downloadReport()">
+                            <i class="fas fa-download me-1"></i>Download PDF
+                        </button>
+                        <a asp-action="LabReports" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+/* Patient Information Styling */
+.info-item {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #7b68ee;
+    height: 100%;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+function downloadReport() {
+    // In a real application, this would generate and download a PDF
+    alert('PDF download feature would be implemented here');
+}
+
+function printReport() {
+    window.print();
+}
+</script>

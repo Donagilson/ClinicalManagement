@@ -1,0 +1,234 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.Prescription>
+
+@{
+    ViewData["Title"] = "Prescriptions Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-prescription-bottle-alt me-2"></i>Prescriptions Management
+                    </h2>
+                    <p class="text-muted mb-0">View and fulfill doctor prescriptions</p>
+                    @if (ViewBag.PendingCount != null && ViewBag.TotalCount != null)
+                    {
+                        <small class="text-muted">@ViewBag.PendingCount of @ViewBag.TotalCount pending prescriptions</small>
+                    }
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show border-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Success!</strong> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show border-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error!</strong> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Prescriptions Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Pending Prescriptions
+                    </h5>
+                    <span class="badge bg-light text-dark fs-6">
+                        <i class="fas fa-clock me-1"></i>@(ViewBag.PendingCount ?? 0) Pending
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Prescription ID</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Diagnosis</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var prescription in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-purple">#@prescription.PrescriptionId</span>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>Patient ID: @prescription.PatientId</strong>
+                                                    <br>
+                                                    <small class="text-muted">MMR-@prescription.PatientId.ToString("000")</small>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-id-card me-1"></i>Medical Record: @prescription.PatientId.ToString("000")
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong>Dr. ID: @prescription.DoctorId</strong>
+                                                    <br>
+                                                    <small class="text-muted">Doctor #@prescription.DoctorId</small>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-user-md me-1"></i>Specialist Consultation
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <strong>@prescription.PrescriptionDate.ToString("yyyy-MM-dd")</strong>
+                                                <br>
+                                                <small class="text-muted">@prescription.PrescriptionDate.ToString("hh:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                @(string.IsNullOrWhiteSpace(prescription.Diagnosis) ? "Not specified" : prescription.Diagnosis)
+                                            </td>
+                                            <td>
+                                                @if (string.IsNullOrWhiteSpace(prescription.Status) || prescription.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning">Pending</span>
+                                                }
+                                                else if (prescription.Status == "Fulfilled")
+                                                {
+                                                    <span class="badge bg-success">Fulfilled</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@prescription.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="PrescriptionDetails" asp-route-id="@prescription.PrescriptionId"
+                                                       class="btn btn-sm btn-outline-info" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    @if (string.IsNullOrWhiteSpace(prescription.Status) || prescription.Status == "Pending")
+                                                    {
+                                                        <form method="post" asp-action="fulfillPrescription" style="display: inline;">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="prescriptionId" value="@prescription.PrescriptionId" />
+                                                            <button type="submit" class="btn btn-sm btn-success"
+                                                                    onclick="return confirm('Are you sure you want to fulfill this prescription?')">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            <i class="fas fa-prescription-bottle-alt fa-3x mb-2 text-muted"></i>
+                                            <p class="mb-0">No pending prescriptions found.</p>
+                                            <p class="text-muted mb-0">All doctor prescriptions have been fulfilled!</p>
+                                            <a asp-action="Index" class="btn btn-purple btn-sm mt-2">
+                                                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

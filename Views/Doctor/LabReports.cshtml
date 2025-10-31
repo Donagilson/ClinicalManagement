@@ -1,0 +1,213 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.LabReport>
+
+@{
+    ViewData["Title"] = "My Lab Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-file-medical me-2"></i>My Lab Reports
+                    </h2>
+                    <p class="text-muted mb-0">Completed lab test results from patients</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show border-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Success!</strong> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show border-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error!</strong> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Lab Reports Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-medical me-2"></i>Lab Reports
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Report Code</th>
+                                    <th>Patient</th>
+                                    <th>Test Name</th>
+                                    <th>Technician</th>
+                                    <th>Collection Date</th>
+                                    <th>Report Date</th>
+                                    <th>Result</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var report in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-primary">@report.ReportCode</span>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">@report.PatientName</div>
+                                                <small class="text-muted">ID: @report.PatientId</small>
+                                            </td>
+                                            <td>@report.TestName</td>
+                                            <td>@report.LabTechnicianName</td>
+                                            <td>@report.CollectionDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (report.ReportDate.HasValue)
+                                                {
+                                                    @report.ReportDate.Value.ToString("MMM dd, yyyy")
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Pending</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(report.ResultValue))
+                                                {
+                                                    <span class="fw-bold">@report.ResultValue</span>
+                                                    @if (!string.IsNullOrEmpty(report.ResultUnit))
+                                                    {
+                                                        <small class="text-muted">@report.ResultUnit</small>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">No result</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (report.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle me-1"></i>Completed
+                                                    </span>
+                                                }
+                                                else if (report.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-clock me-1"></i>Pending
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@report.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-action="LabReportDetails" asp-route-id="@report.LabReportId" class="btn btn-sm btn-outline-info" title="View Details">
+                                                    <i class="fas fa-eye me-1"></i>Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-4">
+                                            <i class="fas fa-file-medical fa-3x mb-2 text-muted"></i>
+                                            <p class="mb-0">No lab reports found.</p>
+                                            <p class="mb-0">Completed lab tests will appear here.</p>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+</style>

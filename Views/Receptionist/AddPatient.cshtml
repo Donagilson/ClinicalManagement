@@ -1,0 +1,157 @@
+@model ClinicalManagementSystem2025.Models.Patient
+@{
+    ViewData["Title"] = "Add New Patient";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-olive">
+            <i class="fas fa-user-plus me-2"></i>Add New Patient
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Success / Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- DEBUG: Show validation errors -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h5>Please fix the following errors:</h5>
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Patient Form -->
+    <div class="card shadow-sm border-olive">
+        <div class="card-header bg-olive text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-file-medical me-2"></i>Patient Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddPatient" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <label asp-for="FirstName" class="form-label fw-bold">First Name *</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="LastName" class="form-label fw-bold">Last Name *</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label fw-bold">Phone Number *</label>
+                    <input asp-for="Phone" class="form-control" placeholder="Enter phone number" />
+                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label fw-bold">Email</label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter email (optional)" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <!-- Demographics -->
+                <div class="col-md-6">
+                    <label asp-for="Gender" class="form-label fw-bold">Gender *</label>
+                    <select asp-for="Gender" class="form-select" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="DateOfBirth" class="form-label fw-bold">Date of Birth *</label>
+                    <input asp-for="DateOfBirth" type="date" class="form-control" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="BloodGroup" class="form-label fw-bold">Blood Group</label>
+                    <select asp-for="BloodGroup" class="form-select">
+                        <option value="">Select Blood Group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                    </select>
+                    <span asp-validation-for="BloodGroup" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="EmergencyContact" class="form-label fw-bold">Emergency Contact</label>
+                    <input asp-for="EmergencyContact" class="form-control" placeholder="Emergency contact number" />
+                    <span asp-validation-for="EmergencyContact" class="text-danger small"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="col-12">
+                    <label asp-for="Address" class="form-label fw-bold">Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                    <span asp-validation-for="Address" class="text-danger small"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="submit" class="btn btn-olive">
+                            <i class="fas fa-save me-1"></i>Save Patient
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-hide success/error messages
+        setTimeout(() => {
+            $('.alert').alert('close');
+        }, 5000);
+
+        // Set max date for date of birth to today
+        document.getElementById('DateOfBirth').max = new Date().toISOString().split('T')[0];
+    </script>
+}

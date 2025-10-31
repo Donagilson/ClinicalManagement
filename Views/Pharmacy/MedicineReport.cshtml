@@ -1,0 +1,314 @@
+@{
+    ViewData["Title"] = "Medicine Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Medicine Report
+                    </h2>
+                    <p class="text-muted mb-0">Dispensing report for @ViewBag.Medicine.MedicineName from @ViewBag.StartDate.ToString("MMM dd, yyyy") to @ViewBag.EndDate.ToString("MMM dd, yyyy")</p>
+                </div>
+                <div>
+                    <a asp-action="Reports" class="btn btn-outline-info me-2">
+                        <i class="fas fa-plus me-1"></i>Generate Another Report
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medicine Information -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Medicine Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="info-item">
+                                <label class="info-label">Medicine Code</label>
+                                <div class="info-value">
+                                    <span class="badge bg-purple fs-6">@ViewBag.Medicine.MedicineCode</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-item">
+                                <label class="info-label">Category</label>
+                                <div class="info-value">@(ViewBag.Medicine.Category ?? "General")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-item">
+                                <label class="info-label">Unit Price</label>
+                                <div class="info-value">₹@ViewBag.Medicine.UnitPrice.ToString("F2")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-item">
+                                <label class="info-label">Prescription Required</label>
+                                <div class="info-value">
+                                    @if (ViewBag.Medicine.RequiresPrescription)
+                                    {
+                                        <span class="badge bg-danger">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">No</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Summary -->
+    @if (ViewBag.Report != null)
+    {
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center border-primary">
+                    <div class="card-body">
+                        <i class="fas fa-capsules fa-2x text-primary mb-2"></i>
+                        <h4 class="card-title">@ViewBag.Report.TotalDispensed</h4>
+                        <p class="card-text text-muted">Units Dispensed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-success">
+                    <div class="card-body">
+                        <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
+                        <h4 class="card-title">₹@ViewBag.Report.TotalRevenue.ToString("F2")</h4>
+                        <p class="card-text text-muted">Total Revenue</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-info">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                        <h4 class="card-title">@ViewBag.Report.AveragePrice.ToString("F2")</h4>
+                        <p class="card-text text-muted">Average Price</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-warning">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-2x text-warning mb-2"></i>
+                        <h4 class="card-title">@ViewBag.Report.PatientCount</h4>
+                        <p class="card-text text-muted">Patients Served</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Detailed Report Table -->
+    @if (ViewBag.Report != null && ViewBag.Report.Details != null && ViewBag.Report.Details.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-purple">
+                    <div class="card-header bg-purple text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-table me-2"></i>Dispensing Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Amount</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detail in ViewBag.Report.Details)
+                                    {
+                                        <tr>
+                                            <td>@detail.DispensedDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <strong>@detail.PatientName</strong>
+                                                <br>
+                                                <small class="text-muted">ID: @detail.PatientId</small>
+                                            </td>
+                                            <td>
+                                                <strong>@detail.DoctorName</strong>
+                                                <br>
+                                                <small class="text-muted">ID: @detail.DoctorId</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">@detail.Quantity</span>
+                                            </td>
+                                            <td>₹@detail.UnitPrice.ToString("F2")</td>
+                                            <td>₹@detail.TotalAmount.ToString("F2")</td>
+                                            <td>@(detail.Notes ?? "N/A")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm border-warning">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-chart-bar fa-4x text-warning mb-3"></i>
+                        <h4 class="text-warning">No Data Available</h4>
+                        <p class="text-muted mb-0">No dispensing records found for this medicine in the selected date range.</p>
+                        <a asp-action="Reports" class="btn btn-warning mt-3">
+                            <i class="fas fa-arrow-left me-1"></i>Generate Different Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Export Options -->
+    @if (ViewBag.Report != null && ViewBag.Report.Details != null && ViewBag.Report.Details.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-download me-2"></i>Export Options
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-success" onclick="exportToPDF()">
+                                <i class="fas fa-file-pdf me-1"></i>Export to PDF
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel me-1"></i>Export to Excel
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="printReport()">
+                                <i class="fas fa-print me-1"></i>Print Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.info-item {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #7b68ee;
+    height: 100%;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+</style>
+
+<script>
+function exportToPDF() {
+    alert('PDF export functionality would be implemented here. This would generate a PDF version of the current report.');
+}
+
+function exportToExcel() {
+    alert('Excel export functionality would be implemented here. This would generate an Excel spreadsheet with the report data.');
+}
+
+function printReport() {
+    window.print();
+}
+</script>

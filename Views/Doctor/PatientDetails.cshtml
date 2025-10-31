@@ -1,0 +1,581 @@
+@{
+    ViewData["Title"] = "Patient Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-user-injured me-2"></i>Patient Medical History
+                    </h2>
+                    <p class="text-muted mb-0">Complete patient information and medical records</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            @await Html.PartialAsync("~/Views/Shared/WorkflowStatus.cshtml", new { AppointmentInfo = ViewBag.CurrentAppointment })
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user me-2"></i>Patient Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">MMR No:</label>
+                                <div class="info-value">
+                                    @if (ViewBag.PatientInfo != null)
+                                    {
+                                        var patient = ViewBag.PatientInfo as ClinicalManagementSystem2025.Models.Patient;
+                                        <span class="badge bg-purple fs-6">@patient.MmrId</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-purple fs-6">CS@(ViewBag.PatientId.ToString("00"))</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Name:</label>
+                                <div class="info-value" id="patientName">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Age:</label>
+                                <div class="info-value" id="patientAge">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Gender:</label>
+                                <div class="info-value" id="patientGender">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Phone:</label>
+                                <div class="info-value" id="patientPhone">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="info-item">
+                                <label class="info-label">Email:</label>
+                                <div class="info-value" id="patientEmail">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-12">
+                            <div class="info-item">
+                                <label class="info-label">Blood Group:</label>
+                                <div class="info-value" id="patientBloodGroup">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-12">
+                            <div class="info-item">
+                                <label class="info-label">Address:</label>
+                                <div class="info-value" id="patientAddress">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical History -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-notes-medical me-2"></i>Medical History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-purple">Allergies</h6>
+                            <div id="allergies" class="mb-3">
+                                <span class="text-muted">Loading allergies...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-purple">Current Medications</h6>
+                            <div id="medications" class="mb-3">
+                                <span class="text-muted">Loading medications...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-purple">Medical Conditions</h6>
+                            <div id="conditions" class="mb-3">
+                                <span class="text-muted">Loading conditions...</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-purple">Emergency Contact</h6>
+                            <div id="emergencyContact" class="mb-3">
+                                <span class="text-muted">Loading emergency contact...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Notes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-medical me-2"></i>Medical Notes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Doctor</th>
+                                    <th>Notes</th>
+                                    <th>Diagnosis</th>
+                                    <th>Prescription</th>
+                                    <th>Follow-up</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.MedicalNotes != null && ((IEnumerable<dynamic>)ViewBag.MedicalNotes).Any())
+                                {
+                                    foreach (var note in ViewBag.MedicalNotes)
+                                    {
+                                        <tr>
+                                            <td>@note.CreatedDate.ToString("yyyy-MM-dd")</td>
+                                            <td>@note.Title</td>
+                                            <td>@(note.Doctor?.DoctorName ?? "System")</td>
+                                            <td>@note.Notes</td>
+                                            <td>@(note.Diagnosis ?? "N/A")</td>
+                                            <td>@(note.Prescription ?? "N/A")</td>
+                                            <td>@(note.FollowUpInstructions ?? "N/A")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No medical notes found for this patient.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Previous Appointments -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Previous Appointments
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Doctor</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentHistory">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Loading appointment history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vital Signs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Latest Vital Signs
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <h4 class="text-purple mb-1" id="bloodPressure">--/--</h4>
+                                <small class="text-muted">Blood Pressure</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <h4 class="text-purple mb-1" id="heartRate">--</h4>
+                                <small class="text-muted">Heart Rate (bpm)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <h4 class="text-purple mb-1" id="temperature">--°F</h4>
+                                <small class="text-muted">Temperature</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 border rounded">
+                                <h4 class="text-purple mb-1" id="weight">-- kg</h4>
+                                <small class="text-muted">Weight</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lab Test Prescriptions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-flask me-2"></i>Lab Test Prescriptions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="text-muted mb-0">Prescribed lab tests for this patient</p>
+                        <a asp-action="PrescribeLabTest" asp-route-patientId="@ViewBag.PatientId" class="btn btn-purple">
+                            <i class="fas fa-plus me-1"></i>Prescribe Lab Test
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Prescription Code</th>
+                                    <th>Test Name</th>
+                                    <th>Doctor</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Prescription Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="labTestPrescriptions">
+                                @if (ViewBag.LabTestPrescriptions != null && ((IEnumerable<dynamic>)ViewBag.LabTestPrescriptions).Any())
+                                {
+                                    foreach (var prescription in ViewBag.LabTestPrescriptions)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-primary">@prescription.PrescriptionCode</span></td>
+                                            <td>@prescription.TestName</td>
+                                            <td>@prescription.DoctorName</td>
+                                            <td>
+                                                @if (prescription.IsUrgent)
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>Urgent
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-clock me-1"></i>Normal
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (prescription.Status == "Prescribed")
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-clipboard-list me-1"></i>Prescribed
+                                                    </span>
+                                                }
+                                                else if (prescription.Status == "Assigned")
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-user-check me-1"></i>Assigned
+                                                    </span>
+                                                }
+                                                else if (prescription.Status == "InProgress")
+                                                {
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-cog fa-spin me-1"></i>In Progress
+                                                    </span>
+                                                }
+                                                else if (prescription.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check-circle me-1"></i>Completed
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-question me-1"></i>@prescription.Status
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>@prescription.PrescriptionDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <a href="@Url.Action("LabTestPrescriptionDetails", "Doctor", new { id = prescription.LabTestPrescriptionId })" class="btn btn-sm btn-outline-info" title="View Details">
+                                                    <i class="fas fa-eye me-1"></i>Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No lab test prescriptions found for this patient.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+/* Patient Information Styling */
+.info-item {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #7b68ee;
+    height: 100%;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+// Simulate loading patient data (replace with actual API calls)
+document.addEventListener('DOMContentLoaded', function() {
+    // Simulate patient data loading
+    setTimeout(function() {
+        loadPatientData();
+        loadMedicalHistory();
+        loadAppointmentHistory();
+        loadVitalSigns();
+    }, 1000);
+});
+
+function loadPatientData() {
+    // Use real patient data from server
+    @if (ViewBag.PatientInfo != null)
+    {
+        var patient = ViewBag.PatientInfo as ClinicalManagementSystem2025.Models.Patient;
+        <text>
+        document.getElementById('patientName').textContent = '@patient.FullName';
+        document.getElementById('patientAge').textContent = '@((DateTime.Today.Year - patient.DateOfBirth.Year)) years';
+        document.getElementById('patientGender').textContent = '@patient.Gender';
+        document.getElementById('patientPhone').textContent = '@(patient.Phone ?? "Not provided")';
+        document.getElementById('patientEmail').textContent = '@(patient.Email ?? "Not provided")';
+        
+        // Format blood group to match receptionist display
+        var bloodGroup = '@Html.Raw(patient.BloodGroup ?? "")';
+        if (bloodGroup && bloodGroup.trim() !== '') {
+            document.getElementById('patientBloodGroup').textContent = bloodGroup;
+        } else {
+            document.getElementById('patientBloodGroup').textContent = 'Not specified';
+        }
+        
+        document.getElementById('patientAddress').textContent = '@(patient.Address ?? "Not provided")';
+        </text>
+    }
+    else
+    {
+        <text>
+        // Fallback for missing patient data
+        document.getElementById('patientName').textContent = 'Patient information not available';
+        document.getElementById('patientAge').textContent = 'N/A';
+        document.getElementById('patientGender').textContent = 'N/A';
+        document.getElementById('patientPhone').textContent = 'N/A';
+        document.getElementById('patientEmail').textContent = 'N/A';
+        document.getElementById('patientBloodGroup').textContent = 'N/A';
+        document.getElementById('patientAddress').textContent = 'N/A';
+        </text>
+    }
+}
+
+function loadMedicalHistory() {
+    // Sample medical history (replace with actual API call)
+    document.getElementById('allergies').innerHTML = `
+        <span class="badge bg-warning me-1">Penicillin</span>
+        <span class="badge bg-warning me-1">Shellfish</span>
+        <small class="text-muted d-block mt-1">No other known allergies</small>
+    `;
+    
+    document.getElementById('medications').innerHTML = `
+        <ul class="list-unstyled mb-0">
+            <li>• Lisinopril 10mg - Daily</li>
+            <li>• Metformin 500mg - Twice daily</li>
+            <li>• Vitamin D3 - Weekly</li>
+        </ul>
+    `;
+    
+    document.getElementById('conditions').innerHTML = `
+        <ul class="list-unstyled mb-0">
+            <li>• Hypertension (controlled)</li>
+            <li>• Type 2 Diabetes</li>
+            <li>• Mild Asthma</li>
+        </ul>
+    `;
+    
+    document.getElementById('emergencyContact').innerHTML = `
+        <strong>John Gilson (Spouse)</strong><br>
+        <small>Phone: +91 9876543210</small>
+    `;
+}
+
+function loadAppointmentHistory() {
+    // Sample appointment history (replace with actual API call)
+    const historyHtml = `
+        <tr>
+            <td>2025-10-20</td>
+            <td>Dr. Smith</td>
+            <td>Regular Checkup</td>
+            <td><span class="badge bg-success">Completed</span></td>
+            <td>Blood pressure stable, continue medication</td>
+        </tr>
+        <tr>
+            <td>2025-09-15</td>
+            <td>Dr. Johnson</td>
+            <td>Diabetes Follow-up</td>
+            <td><span class="badge bg-success">Completed</span></td>
+            <td>HbA1c improved, diet plan working well</td>
+        </tr>
+        <tr>
+            <td>2025-08-10</td>
+            <td>Dr. Brown</td>
+            <td>Asthma Review</td>
+            <td><span class="badge bg-success">Completed</span></td>
+            <td>Inhaler technique corrected, symptoms improved</td>
+        </tr>
+    `;
+    document.getElementById('appointmentHistory').innerHTML = historyHtml;
+}
+
+function loadVitalSigns() {
+    // Sample vital signs (replace with actual API call)
+    document.getElementById('bloodPressure').textContent = '128/82';
+    document.getElementById('heartRate').textContent = '72';
+    document.getElementById('temperature').textContent = '98.6°F';
+    document.getElementById('weight').textContent = '65 kg';
+}
+
+function printPatientDetails() {
+    window.print();
+}
+</script>

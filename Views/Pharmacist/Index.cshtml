@@ -1,0 +1,394 @@
+@model IEnumerable<ClinicalManagementSystem2025.Models.Medicine>
+
+@{
+    ViewData["Title"] = "Pharmacist Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-purple mb-0">
+                        <i class="fas fa-user-md me-2"></i>Pharmacist Dashboard
+                    </h2>
+                    <p class="text-muted mb-0">Manage medicines and pharmacy operations</p>
+                    @if (Model != null)
+                    {
+                        <small class="text-muted">@Model.Count() @(Model.Count() == 1 ? "medicine" : "medicines") available</small>
+                    }
+                </div>
+                <div>
+                    <a asp-action="Prescriptions" class="btn btn-info btn-lg me-2">
+                        <i class="fas fa-prescription-bottle-alt me-2"></i>Prescriptions
+                        @if (ViewBag.PendingPrescriptionsCount > 0)
+                        {
+                            <span class="badge bg-danger ms-1">@ViewBag.PendingPrescriptionsCount</span>
+                        }
+                    </a>
+                    <a asp-action="Inventory" class="btn btn-outline-purple me-2">
+                        <i class="fas fa-boxes me-1"></i>Inventory
+                    </a>
+                    <a asp-action="AddInventory" class="btn btn-success me-2">
+                        <i class="fas fa-plus me-1"></i>Add to Inventory
+                    </a>
+                    <a asp-action="Dispense" class="btn btn-outline-purple me-2">
+                        <i class="fas fa-capsules me-1"></i>Dispense
+                    </a>
+                    <a asp-action="LowStock" class="btn btn-warning">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Low Stock
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-purple">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.PendingPrescriptionsCount ?? 0)</h4>
+                            <p class="card-text">New Prescriptions</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-prescription-bottle-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.FulfilledTodayCount ?? 0)</h4>
+                            <p class="card-text">Fulfilled Today</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(ViewBag.LowStockCount ?? 0)</h4>
+                            <p class="card-text">Low Stock Items</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@(Model?.Count() ?? 0)</h4>
+                            <p class="card-text">Total Medicines</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-pills fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Prescriptions Alert -->
+    @if (ViewBag.PendingPrescriptionsCount > 0)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info border-info" style="border-left: 4px solid #0dcaf0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="alert-heading mb-1">
+                                <i class="fas fa-bell me-2"></i>New Prescriptions Available!
+                            </h6>
+                            <p class="mb-0">
+                                You have <strong>@ViewBag.PendingPrescriptionsCount new prescription@(ViewBag.PendingPrescriptionsCount == 1 ? "" : "s")</strong> from doctors waiting to be fulfilled.
+                                <a href="/Pharmacy/Prescriptions" class="alert-link">View and fulfill now</a>
+                            </p>
+                        </div>
+                        <div class="ms-3">
+                            <a href="/Pharmacy/Prescriptions" class="btn btn-info btn-sm">
+                                <i class="fas fa-prescription-bottle-alt me-1"></i>View Prescriptions
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show border-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Success!</strong> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show border-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error!</strong> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Search" method="get" class="d-flex">
+                        <input type="text" name="searchTerm" class="form-control me-2" placeholder="Search medicines by name, code, or category..." />
+                        <button type="submit" class="btn btn-outline-purple">
+                            <i class="fas fa-search me-1"></i>Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Alerts -->
+    @if (ViewBag.LowStockMedicines != null && ((IEnumerable<dynamic>)ViewBag.LowStockMedicines).Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-warning border-warning">
+                    <h6 class="alert-heading mb-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Low Stock Alert
+                    </h6>
+                    <p class="mb-0">The following medicines are running low on stock:</p>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var medicine in ViewBag.LowStockMedicines)
+                        {
+                            <li><strong>@medicine.MedicineName</strong> (@medicine.MedicineCode)</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Medicines Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-purple">
+                <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-pills me-2"></i>Medicines Management
+                    </h5>
+                    <a asp-action="Create" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i>Add New Medicine
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Generic Name</th>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th>Strength</th>
+                                    <th>Price</th>
+                                    <th>Prescription</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var medicine in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-purple">@medicine.MedicineCode</span>
+                                            </td>
+                                            <td>@medicine.MedicineName</td>
+                                            <td>@(medicine.GenericName ?? "N/A")</td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">@(medicine.Category ?? "General")</span>
+                                            </td>
+                                            <td>@(medicine.MedicineType ?? "N/A")</td>
+                                            <td>@(medicine.Strength ?? "N/A")</td>
+                                            <td>₹@medicine.UnitPrice.ToString("F2")</td>
+                                            <td>
+                                                @if (medicine.RequiresPrescription)
+                                                {
+                                                    <span class="badge bg-danger">Required</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">OTC</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (medicine.IsLowStock)
+                                                {
+                                                    <span class="badge bg-warning">Low Stock</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">@medicine.StockQuantity</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="Details" asp-route-id="@medicine.MedicineId" class="btn btn-sm btn-outline-info" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a asp-action="Edit" asp-route-id="@medicine.MedicineId" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a asp-action="AddInventory" asp-route-medicineId="@medicine.MedicineId" class="btn btn-sm btn-outline-success" title="Add to Inventory">
+                                                        <i class="fas fa-boxes"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete(@medicine.MedicineId, '@medicine.MedicineName')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted py-4">
+                                            <i class="fas fa-pills fa-3x mb-2 text-muted"></i>
+                                            <p class="mb-0">No medicines found.</p>
+                                            <a asp-action="Create" class="btn btn-purple btn-sm mt-2">
+                                                <i class="fas fa-plus me-1"></i>Add First Medicine
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+    <a asp-action="Create" class="btn btn-purple btn-lg rounded-circle shadow-lg" title="Add New Medicine">
+        <i class="fas fa-plus fa-lg"></i>
+    </a>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteMedicineName"></strong>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-purple {
+    color: #7b68ee !important;
+}
+
+.bg-purple {
+    background-color: #7b68ee !important;
+}
+
+.border-purple {
+    border-color: #7b68ee !important;
+}
+
+.btn-purple {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #6a5acd;
+    border-color: #6a5acd;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #7b68ee;
+    border-color: #7b68ee;
+}
+
+.btn-outline-purple:hover {
+    background-color: #7b68ee;
+    border-color: #7b68ee;
+    color: white;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+</style>
+
+<script>
+function confirmDelete(medicineId, medicineName) {
+    document.getElementById('deleteMedicineName').textContent = medicineName;
+    document.getElementById('deleteForm').action = '/Pharmacist/Delete/' + medicineId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
